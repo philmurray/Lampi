@@ -1,4 +1,5 @@
 import time
+import configparser
 
 print("Running Lampi")
 
@@ -6,7 +7,7 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 lampiConfig = config['Lampi']
-interval = int(startupConfig['RunLoopInterval'])
+interval = float(lampiConfig['RunLoopInterval'])
 
-while (true):
+while (True):
     time.sleep(interval)
