@@ -1,23 +1,31 @@
 #!/usr/bin/python
 
-import socket
-import RPi.GPIO as GPIO
+import configparser
+import time
+import internet
 
-def internet(host="8.8.8.8", port=53, timeout=3):
-	try:
-		socket.setdefaulttimeout(timeout)
-		socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-		return True
-	except Exception as ex:
-		print ex.message
-		return False
+print("Running startup.py")
 
+config = configparser.ConfigParser()
+config.read('config.ini')
 
-GPIO.setmode(GPIO.BCM)
+startupConfig = config['Startup']
+interval = int(startupConfig['InternetCheckInterval'])
+internetTimeout = time.time() + int(startupConfig['InternetWaitTimeout'])
 
-while (true):
-	if (internet()):
-		break
-		subprocess.call("/home/pi/Lampi/startup.sh")
-		import
-	
+while (!internet.check() && time.time() < internetTimeout):
+	print("No internet, waiting")
+	time.sleep(interval)
+
+if (!internet.check()):
+	print("internet timeout")
+	subprocess.call(['wpa_cli', 'wps_pbc'])
+	wpsTimeout = time.time() + int(startupConfig['WPSWaitTimeout'])
+	while (!internet.check() && time.time() < wpsTimeout):
+		print("Still no internet")
+		time.sleep(interval)
+
+if (internet.check()):
+	subprocess.call("/home/pi/Lampi/startup.sh")
+
+import Lampi
