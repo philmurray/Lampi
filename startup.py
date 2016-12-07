@@ -4,32 +4,38 @@ import configparser
 import time
 import internet
 import subprocess
+import os
+import logging
 
-print("Running startup.py")
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
 
+logging.info("Running startup.py")
+
+cmddir = os.path.abspath(os.path.dirname(__file__))
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read(os.path.join(cmddir, 'config.ini'))
 startupConfig = config['Startup']
 
 
 def callStartup():
 	if (internet.check()):
-        	subprocess.call("/home/pi/Lampi/startup.sh")
+		logging.info("Running startup.sh")
+		subprocess.call(os.path.join(cmddir, 'startup.sh'))
 
 
 interval = float(startupConfig['InternetCheckInterval'])
 internetTimeout = time.time() + int(startupConfig['InternetWaitTimeout'])
 
 while (not internet.check() and time.time() < internetTimeout):
-	print("No internet, waiting")
+	logging.debug("No internet, waiting")
 	time.sleep(interval)
 
 if (not internet.check()):
-	print("internet timeout")
+	logging.info("internet timeout.  starting wps")
 	subprocess.call(['wpa_cli', 'wps_pbc'])
 	wpsTimeout = time.time() + int(startupConfig['WPSWaitTimeout'])
 	while (not internet.check() and time.time() < wpsTimeout):
-		print("Still no internet, waiting for wps")
+		logging.debug("Still no internet, waiting for wps")
 		time.sleep(interval)
 	callStartup()
 else:
