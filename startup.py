@@ -32,7 +32,7 @@ while (not internet.check() and time.time() < internetTimeout):
 
 if (not internet.check()):
 	logging.info("internet timeout.  starting wps")
-	subprocess.call(['wpa_cli', 'wps_pbc'])
+	subprocess.call(['/sbin/wpa_cli', 'wps_pbc'])
 	wpsTimeout = time.time() + int(startupConfig['WPSWaitTimeout'])
 	while (not internet.check() and time.time() < wpsTimeout):
 		logging.debug("Still no internet, waiting for wps")
