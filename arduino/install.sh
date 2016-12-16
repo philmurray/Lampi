@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ~/Lampi/arduino
+cd /home/pi/Lampi/arduino
 
 md5_file="md5hash"
 hex_file="src/src.ino.with_bootloader.hex"
