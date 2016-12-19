@@ -31,8 +31,13 @@
 #define BUTTON_BLINK 2
 #define BUTTON_FASTBLINK 3
 
+#define STRIP_OFF 0
+#define STRIP_WHITE_255 1
+#define STRIP_WHITE_75 2
+#define STRIP_WHITE_25 3
+
 int buttons[][2] = {
-  {BOT_1_PIN, 1}, 
+  {BOT_1_PIN, 2}, 
   {BOT_2_PIN, 0}, 
   {BOT_3_PIN, 0}, 
   {BOT_4_PIN, 0}, 
@@ -41,6 +46,8 @@ int buttons[][2] = {
   {TOP_3_PIN, 0}
 };
 int numButtons = 7;
+
+int stripMode = 0;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, NEOPIXEL_PIN, NEO_RGBW + NEO_KHZ800);
 char serial_char = 0;
@@ -56,7 +63,8 @@ void setup(){
   }
   
   strip.begin();
-  strip.show();
+  
+  selectStripMode('2'); //TODO: load from memory
 }
 
 void loop(){
@@ -72,6 +80,7 @@ void loop(){
     }
   }
   displayButtons();
+  displayStrip();
 }
 
 void startup() {
@@ -113,29 +122,63 @@ void selectThing(char thing) {
 }
 
 void selectMode(char mode) {
-  switch (mode) {
-    case 'n':
-      if (selected < numButtons) {
-        buttons[selected][1] = BUTTON_ON;
-      }
-      break;
-    case 'f':
-      if (selected < numButtons) {
-        buttons[selected][1] = BUTTON_OFF;
-      }
-      break;
-    case 'b':
-      if (selected < numButtons) {
-        buttons[selected][1] = BUTTON_BLINK;
-      }
-      break;
-    case 's':
-      if (selected < numButtons) {
-        buttons[selected][1] = BUTTON_FASTBLINK;
-      }
-      break;
+  if (selected < numButtons) {
+    selectButtonMode(mode);
+  } else if (selected == STRIP) {
+    selectStripMode(mode);
   }
+
   selected = -1;
+}
+
+void selectStripMode(char mode) {
+    switch (mode) {
+      case 'f':
+          stripMode = STRIP_OFF;
+        break;
+      case '1':
+          stripMode = STRIP_WHITE_255;
+          all_white(255);
+        break;
+      case '2':
+          stripMode = STRIP_WHITE_75;
+          all_white(75);
+        break;
+      case '3':
+          stripMode = STRIP_WHITE_25;
+          all_white(25);
+        break;
+    }
+}
+
+void selectButtonMode(char mode) {
+    switch (mode) {
+      case 'n':
+          buttons[selected][1] = BUTTON_ON;
+        break;
+      case 'f':
+          buttons[selected][1] = BUTTON_OFF;
+        break;
+      case 'b':
+          buttons[selected][1] = BUTTON_BLINK;
+        break;
+      case 's':
+          buttons[selected][1] = BUTTON_FASTBLINK;
+        break;
+    }
+}
+
+void displayStrip() {
+    switch (stripMode) {
+      case STRIP_OFF:
+        break;
+      case STRIP_WHITE_255:
+        break;
+      case STRIP_WHITE_75:
+        break;
+      case STRIP_WHITE_25:
+        break;
+    }
 }
 
 void displayButtons() {
