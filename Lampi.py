@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import os
 import time
 import configparser
@@ -41,5 +43,6 @@ while (True):
                 pressed = key
         elif pressed == key and GPIO.input(val):
             logging.debug("{} was pushed".format(key))
+            pressed = ""
     
     time.sleep(interval)
