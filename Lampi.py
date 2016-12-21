@@ -15,6 +15,6 @@ interval = float(lampiConfig['RunLoopInterval'])
 
 ser = serial.Serial(lampiConfig['Serial'], int(lampiConfig['BaudRate']), timeout=1)
 
-ser.write(bytes('1o2o3o4o', 'UTF-8'))
+ser.write(bytes('1n2n3n4n', 'UTF-8'))
 while (True):
     time.sleep(interval)
