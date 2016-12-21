@@ -13,11 +13,8 @@ config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini
 lampiConfig = config['Lampi']
 interval = float(lampiConfig['RunLoopInterval'])
 
-ser = serial.Serial(lampiConfig.Serial, int(lampiConfig.BaudRate), timeout=1)
+ser = serial.Serial(lampiConfig['Serial'], int(lampiConfig['BaudRate']), timeout=1)
 
-ser.write('1o')
-ser.write('2o')
-ser.write('3o')
-ser.write('4o')
+ser.write(bytes('1o2o3o4o', 'UTF-8'))
 while (True):
     time.sleep(interval)
