@@ -85,6 +85,7 @@ while (True):
                 pressed = key
         elif pressed == key and GPIO.input(val):
             logging.debug("{} was pushed".format(key))
+            pressed = ""
             
     for key,val in lamps.items():
         if not val["is_me"]:
@@ -93,6 +94,7 @@ while (True):
                     pressed = key
             elif pressed == key and GPIO.input(val["button_pin"]):
                 logging.debug("{} was pushed".format(key))
+                pressed = ""
 
     if (last_status_check + status_interval < time.time()):
         for key,val in lamps.items():
