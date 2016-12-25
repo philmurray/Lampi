@@ -65,6 +65,10 @@ lamps = {
 for key,val in pins.items():
     GPIO.setup(val, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+for key,val in lamps.items():
+    if not val["is_me"]:
+        GPIO.setup(val["button_pin"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
 pressed = ""
 
 status_interval = int(lampiConfig['status_check_timeout'])
@@ -82,11 +86,12 @@ while (True):
             logging.debug("{} was pushed".format(key))
             
     for key,val in lamps.items():
-        if pressed == "":
-            if GPIO.input(val["button_pin"]) == False:
-                pressed = key
-        elif pressed == key and GPIO.input(val["button_pin"]):
-            logging.debug("{} was pushed".format(key))
+	if not val["is_me"]:
+            if pressed == "":
+                if GPIO.input(val["button_pin"]) == False:
+                    pressed = key
+            elif pressed == key and GPIO.input(val["button_pin"]):
+                logging.debug("{} was pushed".format(key))
 
     if (last_status_check + status_interval < time.time()):
         for key,val in lamps.items():
