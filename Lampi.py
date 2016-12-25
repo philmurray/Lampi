@@ -105,10 +105,10 @@ while (True):
                 if doc is None and val['online']:
                     logging.debug(key + ' is not online.  writing ' + val['light_pin'] + 'n')
                     val['online'] = False
-                    ser.write(val['light_pin'] + 'f')
+                    ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
                 elif doc is not None and not val['online']:
                     val['online'] = True
-                    ser.write(val['light_pin'] + 'n')
+                    ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
                     logging.debug(key + ' is not online.  writing ' + val['light_pin'] + 'n')
         last_status_check = time.time()
         
