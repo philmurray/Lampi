@@ -68,6 +68,7 @@ for key,val in pins.items():
 for key,val in lamps.items():
     if not val["is_me"]:
         GPIO.setup(val["button_pin"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    ser.write(bytes(val["light_pin"] + 'f', 'UTF-8'))
 
 pressed = ""
 
@@ -100,11 +101,13 @@ while (True):
             else:
                 doc = statusCollection.find_one({"lampId": key, "time":{"$gt": time.time() - status_interval * 2}})
                 if doc is None and val['online']:
+                    logging.debug(key + ' is not online.  writing ' + val['light_pin'] + 'n')
                     val['online'] = False
                     ser.write(val['light_pin'] + 'f')
                 elif doc is not None and not val['online']:
-                    val['online'] = False
+                    val['online'] = True
                     ser.write(val['light_pin'] + 'n')
+                    logging.debug(key + ' is not online.  writing ' + val['light_pin'] + 'n')
         last_status_check = time.time()
         
     if (last_message_check + message_interval < time.time()):
