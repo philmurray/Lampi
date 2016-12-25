@@ -1,3 +1,4 @@
 logs
 __pycache__
 md5hash
+db_config.ini
