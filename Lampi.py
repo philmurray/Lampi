@@ -32,36 +32,33 @@ pins = {
     "b1_pin": int(lampiConfig['b1_pin']),
     "b2_pin": int(lampiConfig['b2_pin']),
     "b3_pin": int(lampiConfig['b3_pin']),
-    "b4_pin": int(lampiConfig['b4_pin']),
-    "t1_pin": int(lampiConfig['t1_pin']),
-    "t2_pin": int(lampiConfig['t2_pin']),
-    "t3_pin": int(lampiConfig['t3_pin']),
+    "b4_pin": int(lampiConfig['b4_pin'])
 }
 
 lamps = {
     "md": {
         "online": False,
-        "button_pin": dbConfig['md_button'],
+        "button_pin": int(dbConfig['md_button']),
         "light_pin": dbConfig['md_light'],
         "is_me": dbConfig['md_isme'] == 'True'
     },
     "e": {
         "online": False,
-        "button_pin": dbConfig['md_button'],
-        "light_pin": dbConfig['md_light'],
-        "is_me": dbConfig['md_isme'] == 'True'
+        "button_pin": int(dbConfig['e_button']),
+        "light_pin": dbConfig['e_light'],
+        "is_me": dbConfig['e_isme'] == 'True'
     },
     "pr": {
         "online": False,
-        "button_pin": dbConfig['md_button'],
-        "light_pin": dbConfig['md_light'],
-        "is_me": dbConfig['md_isme'] == 'True'
+        "button_pin": int(dbConfig['pr_button']),
+        "light_pin": dbConfig['pr_light'],
+        "is_me": dbConfig['pr_isme'] == 'True'
     },
     "ipac": {
         "online": False,
-        "button_pin": dbConfig['md_button'],
-        "light_pin": dbConfig['md_light'],
-        "is_me": dbConfig['md_isme'] == 'True'
+        "button_pin": int(dbConfig['ipac_button']),
+        "light_pin": dbConfig['ipac_light'],
+        "is_me": dbConfig['ipac_isme'] == 'True'
     }
 }
 
@@ -82,6 +79,13 @@ while (True):
             if GPIO.input(val) == False:
                 pressed = key
         elif pressed == key and GPIO.input(val):
+            logging.debug("{} was pushed".format(key))
+            
+    for key,val in lamps.items():
+        if pressed == "":
+            if GPIO.input(val["button_pin"]) == False:
+                pressed = key
+        elif pressed == key and GPIO.input(val["button_pin"]):
             logging.debug("{} was pushed".format(key))
 
     if (last_status_check + status_interval < time.time()):
