@@ -86,7 +86,7 @@ while (True):
             logging.debug("{} was pushed".format(key))
             
     for key,val in lamps.items():
-	if not val["is_me"]:
+        if not val["is_me"]:
             if pressed == "":
                 if GPIO.input(val["button_pin"]) == False:
                     pressed = key
