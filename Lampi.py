@@ -97,19 +97,22 @@ while (True):
                 pressed = ""
 
     if (last_status_check + status_interval < time.time()):
-        for key,val in lamps.items():
-            if val["is_me"]:
-                statusCollection.update({"lampId": key}, {"$set": {"time": time.time()}}, True)
-            else:
-                doc = statusCollection.find_one({"lampId": key, "time":{"$gt": time.time() - status_interval * 2}})
-                if doc is None and val['online']:
-                    logging.debug(key + ' is not online.  writing ' + val['light_pin'] + 'n')
-                    val['online'] = False
-                    ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
-                elif doc is not None and not val['online']:
-                    val['online'] = True
-                    ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
-                    logging.debug(key + ' is not online.  writing ' + val['light_pin'] + 'n')
+        try:
+            for key,val in lamps.items():
+                if val["is_me"]:
+                    statusCollection.update({"lampId": key}, {"$set": {"time": time.time()}}, True)
+                else:
+                    doc = statusCollection.find_one({"lampId": key, "time":{"$gt": time.time() - status_interval * 2}})
+                    if doc is None and val['online']:
+                        logging.debug(key + ' is not online.')
+                        val['online'] = False
+                        ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                    elif doc is not None and not val['online']:
+                        val['online'] = True
+                        ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
+                        logging.debug(key + ' is online.')
+        except:
+            logging.error('failure getting lamp status.')
         last_status_check = time.time()
         
     if (last_message_check + message_interval < time.time()):
