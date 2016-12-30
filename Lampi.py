@@ -77,6 +77,7 @@ messagesCollection = db.messages
 
 def main():
     global my_lamp
+    global current_state
 
     GPIO.setmode(GPIO.BCM)
 
@@ -146,6 +147,7 @@ class Idle(State):
 
     def run(self):
         global my_lamp
+        global current_state
 
         if (self.last_status_check + Idle.status_interval < time.time()):
             try:
@@ -186,6 +188,7 @@ class Idle(State):
             self.last_message_check = time.time()
 
     def handleSymbolButton(self, key, time):
+        global current_state
         if time >= Idle.long_press_time and key == "b4_pin":
             current_state = Off()
         else:
@@ -209,6 +212,7 @@ class Off(State):
         pass
 
     def handleSymbolButton(self, key, time):
+        global current_state
         if key == "b4_pin":
             current_state = Idle()
 
@@ -234,13 +238,16 @@ class BuildMessage(State):
                 ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
 
     def run(self):
+        global current_state
         if self.start_time + timeout > time.time():
             current_state = Idle()
 
     def handleSymbolButton(self, key, time):
+        global current_state
         current_state = BuildMessage(key)
 
     def handleLampButton(self, key, time):
+        global current_state
         if lamps["key"]["online"]:
             current_state = SendMessage(key, button_key)
 
@@ -273,6 +280,7 @@ class SendMessage(State):
             logging.error('failure sending message.')
 
     def run(self):
+        global current_state
         if self.start_time + timeout > time.time():
             current_state = Idle()
 
@@ -299,6 +307,7 @@ class HandleMessage(State):
         ser.write(bytes('s' + pins["button_key"]["light_pin"], 'UTF-8'))
 
     def run(self):
+        global current_state
         if self.start_time + timeout > time.time():
             current_state = Idle()
 

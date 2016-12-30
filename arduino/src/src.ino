@@ -1,3 +1,5 @@
+#include <EasingLibrary.h>
+
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
   #include <avr/power.h>
@@ -5,10 +7,10 @@
 
 #define NEOPIXEL_PIN 6
 
-#define BOT_1_PIN 14
-#define BOT_2_PIN 15
-#define BOT_3_PIN 16
-#define BOT_4_PIN 17
+#define BOT_1_PIN 17
+#define BOT_2_PIN 16
+#define BOT_3_PIN 15
+#define BOT_4_PIN 14
 
 #define TOP_1_PIN 9
 #define TOP_2_PIN 5
@@ -32,9 +34,11 @@
 #define BUTTON_FASTBLINK 3
 
 #define STRIP_OFF 0
-#define STRIP_WHITE_255 1
-#define STRIP_WHITE_75 2
-#define STRIP_WHITE_25 3
+#define STRIP_ON 1
+#define STRIP_RED 2
+#define STRIP_YELLOW 3
+#define STRIP_GREEN 4
+#define STRIP_BLUE 5
 
 int buttons[][2] = {
   {BOT_1_PIN, 2}, 
@@ -48,6 +52,9 @@ int buttons[][2] = {
 int numButtons = 7;
 
 int stripMode = 0;
+long stripModeStart = 0;
+int stripWidth = 10;
+int stripHeight = 6;
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, NEOPIXEL_PIN, NEO_RGBW + NEO_KHZ800);
 char serial_char = 0;
@@ -64,7 +71,7 @@ void setup(){
   
   strip.begin();
   
-  selectStripMode('2'); //TODO: load from memory
+  selectStripMode('n');
 }
 
 void loop(){
@@ -132,21 +139,31 @@ void selectMode(char mode) {
 }
 
 void selectStripMode(char mode) {
+  stripModeStart = millis();
     switch (mode) {
       case 'f':
           stripMode = STRIP_OFF;
+          all_white(0);
         break;
-      case '1':
-          stripMode = STRIP_WHITE_255;
+      case 'n':
+          stripMode = STRIP_ON;
           all_white(255);
         break;
+      case '1':
+          stripMode = STRIP_RED;
+          all_white(0);
+        break;
       case '2':
-          stripMode = STRIP_WHITE_75;
-          all_white(75);
+          stripMode = STRIP_YELLOW;
+          all_white(0);
         break;
       case '3':
-          stripMode = STRIP_WHITE_25;
-          all_white(25);
+          stripMode = STRIP_GREEN;
+          all_white(0);
+        break;
+      case '4':
+          stripMode = STRIP_BLUE;
+          all_white(0);
         break;
     }
 }
@@ -172,11 +189,15 @@ void displayStrip() {
     switch (stripMode) {
       case STRIP_OFF:
         break;
-      case STRIP_WHITE_255:
+      case STRIP_ON:
         break;
-      case STRIP_WHITE_75:
+      case STRIP_RED:
         break;
-      case STRIP_WHITE_25:
+      case STRIP_YELLOW:
+        break;
+      case STRIP_GREEN:
+        break;
+      case STRIP_BLUE:
         break;
     }
 }
@@ -208,7 +229,6 @@ void displayButtons() {
       break;
     }
   }
-  starting_up = false;
 }
 
 void all_white(uint8_t b) {
