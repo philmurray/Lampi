@@ -67,19 +67,16 @@ lamps = {
     }
 }
 
-my_lamp = ""
-
-pressed = ""
-pressed_start = 0
+global my_lamp
 
 interval = float(lampiConfig['RunLoopInterval'])
-
 client = MongoClient(dbConfig['connectionString'])
 db = client.lampi
 statusCollection = db.status
 messagesCollection = db.messages
 
 def main():
+
     GPIO.setmode(GPIO.BCM)
 
     for key,val in pins.items():
@@ -91,6 +88,9 @@ def main():
         else:
             my_lamp = key
         ser.write(bytes(val["light_pin"] + 'f', 'UTF-8'))
+
+    pressed = ""
+    pressed_start = 0
 
     while (True):
         for key,val in pins.items():
@@ -183,7 +183,7 @@ class Off(State):
     def __init__(self):
         logging.debug("Entering Off state")
         for key,val in pins.items():
-            if pressed == "b4_pin":
+            if key == "b4_pin":
                 ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
             else:
                 ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
