@@ -248,7 +248,7 @@ class BuildMessage(State):
 
     def handleLampButton(self, key, time):
         global current_state
-        if lamps["key"]["online"]:
+        if lamps[key]["online"]:
             current_state = SendMessage(key, button_key)
 
 
@@ -272,7 +272,7 @@ class SendMessage(State):
             else:
                 ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
 
-        ser.write(bytes('s' + pins["button_key"]["light_pin"], 'UTF-8'))
+        ser.write(bytes('s' + pins[button_key]["light_pin"], 'UTF-8'))
 
         try:
             messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": button_key, "time": time.time(), "handled": False })
@@ -304,7 +304,7 @@ class HandleMessage(State):
             else:
                 ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
 
-        ser.write(bytes('s' + pins["button_key"]["light_pin"], 'UTF-8'))
+        ser.write(bytes('s' + pins[button_key]["light_pin"], 'UTF-8'))
 
     def run(self):
         global current_state
