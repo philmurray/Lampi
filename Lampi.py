@@ -67,7 +67,7 @@ lamps = {
     }
 }
 
-global my_lamp
+my_lamp = ""
 
 interval = float(lampiConfig['RunLoopInterval'])
 client = MongoClient(dbConfig['connectionString'])
@@ -76,6 +76,7 @@ statusCollection = db.status
 messagesCollection = db.messages
 
 def main():
+    global my_lamp
 
     GPIO.setmode(GPIO.BCM)
 
@@ -144,6 +145,8 @@ class Idle(State):
         self.last_message_check = 0
 
     def run(self):
+        global my_lamp
+
         if (self.last_status_check + Idle.status_interval < time.time()):
             try:
                 for key,val in lamps.items():
@@ -243,6 +246,7 @@ class BuildMessage(State):
 
 
 class SendMessage(State):
+    global my_lamp
     timeout = int(lampiConfig['send_message_timeout'])
 
     def __init__(self, lamp_key, button_key):
