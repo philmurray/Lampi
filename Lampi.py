@@ -239,7 +239,7 @@ class BuildMessage(State):
 
     def run(self):
         global current_state
-        if self.start_time + BuildMessage.timeout > time.time():
+        if self.start_time + BuildMessage.timeout < time.time():
             current_state = Idle()
 
     def handleSymbolButton(self, key, time):
@@ -281,7 +281,7 @@ class SendMessage(State):
 
     def run(self):
         global current_state
-        if self.start_time + SendMessage.timeout > time.time():
+        if self.start_time + SendMessage.timeout < time.time():
             current_state = Idle()
 
 
@@ -308,7 +308,7 @@ class HandleMessage(State):
 
     def run(self):
         global current_state
-        if self.start_time + HandleMessage.timeout > time.time():
+        if self.start_time + HandleMessage.timeout < time.time():
             current_state = Idle()
 
 
