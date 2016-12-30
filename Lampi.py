@@ -102,10 +102,11 @@ def main():
                     pressed_start = time.time()
 
             elif pressed == key and GPIO.input(val["button_pin"]):
-                logging.debug("{} was pushed".format(key))
+                secs = time.time() - pressed_start
+                logging.debug("{} was pushed for ".format(key, secs))
+                current_state.handleSymbolButton(key, secs)
                 pressed = ""
                 pressed_start = 0
-                current_state.handleSymbolButton(key, time.time() - pressed_start)
 
 
         for key,val in lamps.items():
@@ -114,10 +115,11 @@ def main():
                     if GPIO.input(val["button_pin"]) == False:
                         pressed = key
                 elif pressed == key and GPIO.input(val["button_pin"]):
-                    logging.debug("{} was pushed".format(key))
+                    secs = time.time() - pressed_start
+                    logging.debug("{} was pushed for ".format(key, secs))
+                    current_state.handleLampButton(key, secs)
                     pressed = ""
                     pressed_start = 0
-                    current_state.handleLampButton(key, time.time() - pressed_start)
 
         current_state.run()
         time.sleep(interval)
@@ -187,9 +189,9 @@ class Idle(State):
 
             self.last_message_check = time.time()
 
-    def handleSymbolButton(self, key, time):
+    def handleSymbolButton(self, key, tm):
         global current_state
-        if time >= Idle.long_press_time and key == "b4_pin":
+        if tm >= Idle.long_press_time and key == "b4_pin":
             current_state = Off()
         else:
             current_state = BuildMessage(key)
