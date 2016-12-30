@@ -103,7 +103,7 @@ def main():
 
             elif pressed == key and GPIO.input(val["button_pin"]):
                 secs = time.time() - pressed_start
-                logging.debug("{} was pushed for ".format(key, secs))
+                logging.debug("{} was pushed for {}".format(key, secs))
                 current_state.handleSymbolButton(key, secs)
                 pressed = ""
                 pressed_start = 0
@@ -116,7 +116,7 @@ def main():
                         pressed = key
                 elif pressed == key and GPIO.input(val["button_pin"]):
                     secs = time.time() - pressed_start
-                    logging.debug("{} was pushed for ".format(key, secs))
+                    logging.debug("{} was pushed for {}".format(key, secs))
                     current_state.handleLampButton(key, secs)
                     pressed = ""
                     pressed_start = 0
@@ -191,7 +191,7 @@ class Idle(State):
 
     def handleSymbolButton(self, key, tm):
         global current_state
-        if tm >= Idle.long_press_time and key == "b4_pin":
+        if tm >= Idle.long_press_time and key == "b4":
             current_state = Off()
         else:
             current_state = BuildMessage(key)
@@ -201,7 +201,7 @@ class Off(State):
     def __init__(self):
         logging.debug("Entering Off state")
         for key,val in pins.items():
-            if key == "b4_pin":
+            if key == "b4":
                 ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
             else:
                 ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
@@ -215,7 +215,7 @@ class Off(State):
 
     def handleSymbolButton(self, key, time):
         global current_state
-        if key == "b4_pin":
+        if key == "b4":
             current_state = Idle()
 
 
