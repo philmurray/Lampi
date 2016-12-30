@@ -159,8 +159,13 @@ class Idle(State):
                             val['online'] = True
                             ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
                             logging.debug(key + ' is online.')
-            except:
+            except Exception as e:
                 logging.error('failure getting lamp status.')
+                if hasattr(e, 'message'):
+                    logging.error(e.message)
+                else:
+                    logging.error(e)
+
             self.last_status_check = time.time()
 
         if (self.last_message_check + Idle.message_interval < time.time()):
@@ -168,8 +173,13 @@ class Idle(State):
                 message = messagesCollection.find_one_and_update({"lampId": my_lamp, "time":{"$gt": time.time() - Idle.message_interval * 2}, "handled": False}, {"$set": {"handled": True}})
                 if message is not None:
                     current_state = HandleMessage(message["from"], message["message"])
-            except:
-                logging.error('failure getting lamp status.')
+            except Exception as e:
+                logging.error('failure getting lamp message.')
+                if hasattr(e, 'message'):
+                    logging.error(e.message)
+                else:
+                    logging.error(e)
+
             self.last_message_check = time.time()
 
     def handleSymbolButton(self, key, time):
