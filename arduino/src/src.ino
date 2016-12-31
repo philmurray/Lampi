@@ -41,6 +41,8 @@
 #define STRIP_GREEN 5
 #define STRIP_BLUE 6
 
+#define UP_LENGTH 10
+#define UP_REPEAT 30
 
 #define ON_OFF_DURATION 1000
 #define ON_OFF_FADE 1
@@ -49,6 +51,11 @@
 #define SHORT_FADE_DURATION 250
 #define MEDIUM_FADE_DURATION 750
 #define LONG_FADE_DURATION 1500
+
+#define HEARTBEAT_DURATION 300
+
+#define SUN_DURATION 2000
+#define SUN_FADE 30
 
 int buttons[][2] = {
   {BOT_1_PIN, 2}, 
@@ -78,6 +85,7 @@ SineEase mediumEase;
 SineEase longEase;
 
 CircularEase heartEase;
+SineEase sunEase;
 
 void setup(){
   Serial.begin(9600);
@@ -97,8 +105,11 @@ void setup(){
   longEase.setDuration(LONG_FADE_DURATION);
   longEase.setTotalChangeInPosition(255);
 
-  heartEase.setDuration(SHORT_FADE_DURATION);
+  heartEase.setDuration(HEARTBEAT_DURATION);
   heartEase.setTotalChangeInPosition(255);
+  
+  sunEase.setDuration(SUN_DURATION);
+  sunEase.setTotalChangeInPosition(255 + SUN_FADE * 6);
   
   strip.begin();
   
@@ -173,33 +184,31 @@ void selectMode(char mode) {
 
 void selectStripMode(char mode) {
   stripModeStart = millis();
-    switch (mode) {
-      case 'f':
-          stripMode = STRIP_OFF;
-        break;
-      case 'n':
-          stripMode = STRIP_ON;
-        break;
-      case 'u':
-          stripMode = STRIP_UP;
-        break;
-      case '1':
-          stripMode = STRIP_RED;
-          strip.clear();
-        break;
-      case '2':
-          stripMode = STRIP_YELLOW;
-          strip.clear();
-        break;
-      case '3':
-          stripMode = STRIP_GREEN;
-          strip.clear();
-        break;
-      case '4':
-          stripMode = STRIP_BLUE;
-          strip.clear();
-        break;
-    }
+  strip.clear();
+  strip.show();
+  switch (mode) {
+    case 'f':
+      stripMode = STRIP_OFF;
+      break;
+    case 'n':
+      stripMode = STRIP_ON;
+      break;
+    case 'u':
+      stripMode = STRIP_UP;
+      break;
+    case '1':
+      stripMode = STRIP_RED;
+      break;
+    case '2':
+      stripMode = STRIP_YELLOW;
+      break;
+    case '3':
+      stripMode = STRIP_GREEN;
+      break;
+    case '4':
+      stripMode = STRIP_BLUE;
+      break;
+  }
 }
 
 void selectButtonMode(char mode) {
@@ -226,52 +235,25 @@ void displayStrip() {
     unsigned long timePassed = currentTime - stripModeStart;
     switch (stripMode) {
       case STRIP_OFF:
-        if ( timePassed < ON_OFF_DURATION) {
-          for(uint8_t i=0; i<strip.numPixels(); i++) {
-            int val = 255 - onOffEase.easeOut(timePassed) - i * ON_OFF_FADE;
-            strip.setPixelColor(i, strip.Color(0,0,0,constrain(val, 0, 255)));
-          }
-          strip.show();
-        }
+        displayOff(currentTime, timePassed);
         break;
       case STRIP_ON:
-        if ( timePassed < ON_OFF_DURATION) {
-          for(uint8_t i=0; i<strip.numPixels(); i++) {
-            int val = onOffEase.easeIn(timePassed) - i * ON_OFF_FADE;
-            strip.setPixelColor(i, strip.Color(0,0,0,constrain(val, 0, 255)));
-          }
-          strip.show();
-        }
+        displayOn(currentTime, timePassed);
         break;
       case STRIP_UP:
-      {
-        uint8_t len = 30;
-        uint8_t str = 10;
-        
-        uint8_t minLight = (currentTime / 10) % len;
-        uint8_t maxLight = (currentTime / 10 + str) % len;
-        
-        for(uint8_t i=0; i<strip.numPixels(); i++) {
-          uint8_t light = i % len;
-          if ((minLight < maxLight && light > minLight && light <= maxLight) || (minLight > maxLight && (light <= maxLight || light > minLight)))
-          {
-            strip.setPixelColor(i, strip.Color(0,0,0,255));
-          }
-          else
-          {
-            strip.setPixelColor(i, strip.Color(0,0,0,0));
-          }
-        }
-        strip.show();
-      }
+        displayUp(currentTime, timePassed);
         break;
       case STRIP_RED:
+        displayRed(currentTime, timePassed);
         break;
       case STRIP_YELLOW:
+        displayYellow(currentTime, timePassed);
         break;
       case STRIP_GREEN:
+        displayGreen(currentTime, timePassed);
         break;
       case STRIP_BLUE:
+        displayBlue(currentTime, timePassed);
         break;
     }
 }
@@ -299,4 +281,173 @@ void displayButtons() {
   }
 }
 
+void displayUp(unsigned long currentTime, unsigned long timePassed)
+{
+  uint8_t minLight = (currentTime / 10) % UP_REPEAT;
+  uint8_t maxLight = (currentTime / 10 + UP_LENGTH) % UP_REPEAT;
+  
+  for(uint8_t i=0; i<strip.numPixels(); i++) {
+    uint8_t light = i % UP_REPEAT;
+    if ((minLight < maxLight && light > minLight && light <= maxLight) || (minLight > maxLight && (light <= maxLight || light > minLight)))
+    {
+      strip.setPixelColor(i, strip.Color(0,0,0,255));
+    }
+    else
+    {
+      strip.setPixelColor(i, strip.Color(0,0,0,0));
+    }
+  }
+  strip.show();
+}
+
+void displayOn(unsigned long currentTime, unsigned long timePassed)
+{
+  if ( timePassed < ON_OFF_DURATION) {
+    for(uint8_t i=0; i<strip.numPixels(); i++) {
+      int val = onOffEase.easeIn(timePassed) - i * ON_OFF_FADE;
+      strip.setPixelColor(i, strip.Color(0,0,0,constrain(val, 0, 255)));
+    }
+    strip.show();
+  }
+}
+void displayOff(unsigned long currentTime, unsigned long timePassed)
+{
+  if ( timePassed < ON_OFF_DURATION) {
+    for(uint8_t i=0; i<strip.numPixels(); i++) {
+      int val = 255 - constrain(onOffEase.easeOut(timePassed) - i * ON_OFF_FADE, 0, 255);
+      strip.setPixelColor(i, strip.Color(0,0,0,val));
+    }
+    strip.show();
+  }
+}
+void displayRed(unsigned long currentTime, unsigned long timePassed)
+{
+  timePassed = timePassed % (HEARTBEAT_DURATION * 5);
+  
+  if (timePassed > 0 && timePassed < HEARTBEAT_DURATION) 
+  {
+    
+  }
+  else
+  {
+    timePassed -= HEARTBEAT_DURATION;
+  }
+  
+  if (timePassed > 0 && timePassed < HEARTBEAT_DURATION)
+  {
+    for(uint8_t i=0; i<strip.numPixels(); i++) {
+      int val = heartEase.easeIn(timePassed);
+      strip.setPixelColor(i, strip.Color(0,constrain(val, 0, 255),0,0));
+    }
+  }
+  else
+  {
+    timePassed -= HEARTBEAT_DURATION;
+  }
+  
+  if (timePassed > 0 && timePassed > HEARTBEAT_DURATION)
+  {
+    for(uint8_t i=0; i<strip.numPixels(); i++) {
+      int val = 255 - heartEase.easeOut(timePassed);
+      strip.setPixelColor(i, strip.Color(0, constrain(val, 0, 255),0,0));
+    }
+  }
+  else
+  {
+    timePassed -= HEARTBEAT_DURATION;
+  }
+  
+  if (timePassed > 0 && timePassed < HEARTBEAT_DURATION)
+  {
+    for(uint8_t i=0; i<strip.numPixels(); i++) {
+      int val = heartEase.easeIn(timePassed);
+      strip.setPixelColor(i, strip.Color(0, constrain(val, 0, 255),0,0));
+    }
+  }
+  else
+  {
+    timePassed -= HEARTBEAT_DURATION;
+  }
+  
+  if (timePassed > 0 && timePassed > HEARTBEAT_DURATION)
+  {
+    for(uint8_t i=0; i<strip.numPixels(); i++) {
+      int val = 255 - heartEase.easeOut(timePassed);
+      strip.setPixelColor(i, strip.Color(0, constrain(val, 0, 255),0,0));
+    }
+  }
+  else
+  {
+    timePassed -= HEARTBEAT_DURATION;
+  }
+  
+  strip.show();
+}
+
+void displayYellow(unsigned long currentTime, unsigned long timePassed)
+{
+  if ( timePassed < SUN_DURATION * 1.5) {
+    for(uint8_t i=0; i<strip.numPixels(); i++) {
+      int val = sunEase.easeIn(timePassed) - (int(i / 10) * SUN_FADE);
+      strip.setPixelColor(i, strip.Color(constrain(val, 0, 255) * 0.5f,constrain(val, 0, 255),0,0));
+    }
+  }
+
+  if ( timePassed > SUN_DURATION * 1.5 && timePassed < MODE_DURATION) {
+    for(uint8_t i=0; i<strip.numPixels(); i++) {
+      int val = 255 - constrain(sunEase.easeOut(timePassed - SUN_DURATION * 1.5) - (int(((strip.numPixels() - 1) - i) / 10) * SUN_FADE), 0, 255);
+      strip.setPixelColor(i, strip.Color(val * 0.5f,val,0,0));
+    }
+  }
+  strip.show();
+}
+
+void displayGreen(unsigned long currentTime, unsigned long timePassed)
+{
+  uint8_t step = MODE_DURATION / strip.numPixels();
+  
+  if ( timePassed < MODE_DURATION / 2)
+  {
+    for(uint8_t i=0; i<strip.numPixels()/2; i++) {
+      if (timePassed > i * step) {
+        strip.setPixelColor(i, strip.Color(255,0,0,0));
+        strip.setPixelColor((strip.numPixels() - 1) - i, strip.Color(255,0,0,0));
+      }
+    }
+  }
+  else
+  {    
+    for(uint8_t i=0; i<strip.numPixels()/2; i++) {
+      int s = strip.numPixels()/2 - 1 - i;
+      if ((timePassed - MODE_DURATION / 2) > s * step) {
+        strip.setPixelColor(i, strip.Color(0,0,0,0));
+        strip.setPixelColor((strip.numPixels() - 1) - i, strip.Color(0,0,0,0));
+      }
+    }
+  }
+  strip.show();
+}
+
+void displayBlue(unsigned long currentTime, unsigned long timePassed)
+{
+  if (timePassed < MODE_DURATION - MEDIUM_FADE_DURATION)
+  {
+    //pick a random pixel every ... some amount of time.  turn it on
+    if (timePassed % 10 == 0)
+    {
+      int i = random(0, strip.numPixels());
+      strip.setPixelColor(i, strip.Color(0, 0, 255 ,0));
+    }
+
+    //cool stuff
+  }
+  else if (timePassed > MODE_DURATION - MEDIUM_FADE_DURATION && timePassed < MODE_DURATION)
+  {
+    for(uint8_t i=0; i<strip.numPixels(); i++) {
+      int val = 255 - constrain(mediumEase.easeOut(timePassed - (MODE_DURATION - MEDIUM_FADE_DURATION)), 0, 255);
+      strip.setPixelColor(i, strip.Color(0, 0, val ,0));
+    }
+  }
+  strip.show();
+}
 
