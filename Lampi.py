@@ -143,7 +143,7 @@ class Idle(State):
     def __init__(self):
         logging.debug("Entering Idle state")
 
-        ser.write(bytes('1n2n3n4n', 'UTF-8'))
+        ser.write(bytes('1n2n3n4nsn', 'UTF-8'))
         self.last_status_check = 0
         self.last_message_check = 0
 
@@ -210,6 +210,8 @@ class Off(State):
             if not val["is_me"]:
                 ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
 
+        ser.write(bytes('sf', 'UTF-8'))
+
     def run(self):
         pass
 
@@ -274,7 +276,7 @@ class SendMessage(State):
             else:
                 ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
 
-        ser.write(bytes('s' + pins[button_key]["light_pin"], 'UTF-8'))
+        ser.write(bytes('s' + u, 'UTF-8'))
 
         try:
             messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": button_key, "time": time.time(), "handled": False })
