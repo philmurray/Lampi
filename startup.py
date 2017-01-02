@@ -29,6 +29,7 @@ def callStartup():
 		ser.write(bytes('3n4b', 'UTF-8'))
 		logging.info("Running arduino install")
 		subprocess.call(os.path.join(cmddir, 'arduino/install.sh'))
+		time.sleep(1)
 		ser.close()
 
 

@@ -144,11 +144,18 @@ class Idle(State):
         logging.debug("Entering Idle state")
 
         ser.write(bytes('1n2n3n4n', 'UTF-8'))
+        
         if (slow):
             ser.write(bytes('sm', 'UTF-8'))
         else:
             ser.write(bytes('sn', 'UTF-8'))
-            
+
+        for key,val in lamps.items():
+            if val["online"]:
+                ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
+            elif not val["is_me"]:
+                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+
         self.last_status_check = 0
         self.last_message_check = 0
 
@@ -223,7 +230,7 @@ class Off(State):
     def handleSymbolButton(self, key, time):
         global current_state
         if key == "b4":
-            current_state = Idle()
+            current_state = Idle(True)
 
 
 class BuildMessage(State):
@@ -258,7 +265,7 @@ class BuildMessage(State):
     def handleLampButton(self, key, time):
         global current_state
         if lamps[key]["online"]:
-            current_state = SendMessage(key, button_key)
+            current_state = SendMessage(key, self.button_key)
 
 
 class SendMessage(State):

@@ -42,8 +42,9 @@
 #define STRIP_GREEN 5
 #define STRIP_BLUE 6
 
+#define UP_SPEED 40
 #define UP_LENGTH 10
-#define UP_REPEAT 30
+#define UP_REPEAT 50
 
 #define ON_OFF_DURATION 1000
 #define ON_OFF_FADE 1
@@ -296,8 +297,8 @@ void displayButtons() {
 
 void displayUp(unsigned long currentTime, unsigned long timePassed)
 {
-  uint8_t minLight = (currentTime / 10) % UP_REPEAT;
-  uint8_t maxLight = (currentTime / 10 + UP_LENGTH) % UP_REPEAT;
+  uint8_t minLight = (currentTime / UP_SPEED) % UP_REPEAT;
+  uint8_t maxLight = (currentTime / UP_SPEED + UP_LENGTH) % UP_REPEAT;
   
   for(uint8_t i=0; i<strip.numPixels(); i++) {
     uint8_t light = i % UP_REPEAT;
