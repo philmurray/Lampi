@@ -3,6 +3,7 @@ import time
 import configparser
 import logging
 import serial
+import utilities
 import RPi.GPIO as GPIO
 from pymongo import MongoClient
 
