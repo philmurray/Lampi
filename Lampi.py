@@ -92,16 +92,13 @@ def main():
             utilities.lights_message(ser, val["light_pin"] + 'f')
         else:
             my_lamp = key
-        
+
     lamps.pop(my_lamp)
 
     pressed = ""
     pressed_start = 0
 
     while (True):
-        for line in ser.read():
-            logging.debug(str('serial char: ') + chr(line) )
-
         for key,val in pins.items():
             if pressed == "":
                 if GPIO.input(val["button_pin"]) == False:
