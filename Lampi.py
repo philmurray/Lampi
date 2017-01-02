@@ -90,6 +90,7 @@ def main():
         if not val["is_me"]:
             GPIO.setup(val["button_pin"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         else:
+            my_dict.pop(key)
             my_lamp = key
         utilities.lights_message(ser, val["light_pin"] + 'f')
 
@@ -115,16 +116,15 @@ def main():
 
 
         for key,val in lamps.items():
-            if not val["is_me"]:
-                if pressed == "":
-                    if GPIO.input(val["button_pin"]) == False:
-                        pressed = key
-                elif pressed == key and GPIO.input(val["button_pin"]):
-                    secs = time.time() - pressed_start
-                    logging.debug("{} was pushed for {}".format(key, secs))
-                    current_state.handleLampButton(key, secs)
-                    pressed = ""
-                    pressed_start = 0
+            if pressed == "":
+                if GPIO.input(val["button_pin"]) == False:
+                    pressed = key
+            elif pressed == key and GPIO.input(val["button_pin"]):
+                secs = time.time() - pressed_start
+                logging.debug("{} was pushed for {}".format(key, secs))
+                current_state.handleLampButton(key, secs)
+                pressed = ""
+                pressed_start = 0
 
         current_state.run()
         time.sleep(interval)
@@ -158,7 +158,7 @@ class Idle(State):
         for key,val in lamps.items():
             if val["online"]:
                 utilities.lights_message(ser, val['light_pin'] + 'n')
-            elif not val["is_me"]:
+            else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
         self.last_status_check = 0
@@ -171,18 +171,18 @@ class Idle(State):
         if (self.last_status_check + Idle.status_interval < time.time()):
             try:
                 for key,val in lamps.items():
-                    if val["is_me"]:
-                        statusCollection.update({"lampId": key}, {"$set": {"time": time.time()}}, True)
-                    else:
-                        doc = statusCollection.find_one({"lampId": key, "time":{"$gt": time.time() - Idle.status_interval * 2}})
-                        if doc is None and val['online']:
-                            val['online'] = False
-                            utilities.lights_message(ser, val['light_pin'] + 'f')
-                            logging.debug(key + ' is not online.')
-                        elif doc is not None and not val['online'] and not val['is_me']:
-                            val['online'] = True
-                            utilities.lights_message(ser, val['light_pin'] + 'n')
-                            logging.debug(key + ' is online.')
+                    doc = statusCollection.find_one({"lampId": key, "time":{"$gt": time.time() - Idle.status_interval * 2}})
+                    if doc is None and val['online']:
+                        val['online'] = False
+                        utilities.lights_message(ser, val['light_pin'] + 'f')
+                        logging.debug(key + ' is not online.')
+                    elif doc is not None and not val['online']:
+                        val['online'] = True
+                        utilities.lights_message(ser, val['light_pin'] + 'n')
+                        logging.debug(key + ' is online.')
+
+                statusCollection.update({"lampId": my_lamp}, {"$set": {"time": time.time()}}, True)
+
             except Exception as e:
                 logging.error('failure getting lamp status.')
                 if hasattr(e, 'message'):
@@ -224,8 +224,7 @@ class Off(State):
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in lamps.items():
-            if not val["is_me"]:
-                utilities.lights_message(ser, val['light_pin'] + 'f')
+            utilities.lights_message(ser, val['light_pin'] + 'f')
 
         utilities.lights_message(ser, 'sf')
 
@@ -249,7 +248,7 @@ class BuildMessage(State):
         for key,val in lamps.items():
             if val["online"]:
                 utilities.lights_message(ser, val['light_pin'] + 'b')
-            elif not val["is_me"]:
+            else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in pins.items():
@@ -318,7 +317,7 @@ class HandleMessage(State):
         self.start_time = time.time()
 
         for key,val in lamps.items():
-            if lamp_key == key and not val['is_me']:
+            if lamp_key == key:
                 utilities.lights_message(ser, val['light_pin'] + 's')
             else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
