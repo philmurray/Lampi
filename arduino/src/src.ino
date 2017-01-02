@@ -35,15 +35,15 @@
 
 #define STRIP_OFF 0
 #define STRIP_ON 1
-#define STRIP_FAST_ON 1
-#define STRIP_UP 2
-#define STRIP_RED 3
-#define STRIP_YELLOW 4
-#define STRIP_GREEN 5
-#define STRIP_BLUE 6
+#define STRIP_FAST_ON 2
+#define STRIP_UP 3
+#define STRIP_RED 4
+#define STRIP_YELLOW 5
+#define STRIP_GREEN 6
+#define STRIP_BLUE 7
 
-#define UP_SPEED 40
-#define UP_LENGTH 10
+#define UP_SPEED 25
+#define UP_LENGTH 5
 #define UP_REPEAT 50
 
 #define ON_OFF_DURATION 1000

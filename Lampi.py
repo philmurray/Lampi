@@ -147,9 +147,9 @@ class Idle(State):
         utilities.lights_message(ser, '1n2n3n4n')
 
         if (slow):
-            utilities.lights_message(ser, 'sn')
-        else:
             utilities.lights_message(ser, 'sm')
+        else:
+            utilities.lights_message(ser, 'sn')
 
         for key,val in lamps.items():
             if val["online"]:
