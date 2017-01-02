@@ -99,8 +99,9 @@ def main():
     pressed_start = 0
 
     current_state = Idle()
-    
+
     while (True):
+        current_state.run()
         for key,val in pins.items():
             if pressed == "":
                 if GPIO.input(val["button_pin"]) == False:
@@ -126,7 +127,6 @@ def main():
                 pressed = ""
                 pressed_start = 0
 
-        current_state.run()
         time.sleep(interval)
 
 class State:
