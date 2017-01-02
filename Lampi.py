@@ -179,7 +179,7 @@ class Idle(State):
                             val['online'] = False
                             utilities.lights_message(ser, val['light_pin'] + 'f')
                             logging.debug(key + ' is not online.')
-                        elif doc is not None and not val['online']:
+                        elif doc is not None and not val['online'] and not val['is_me']:
                             val['online'] = True
                             utilities.lights_message(ser, val['light_pin'] + 'n')
                             logging.debug(key + ' is online.')
