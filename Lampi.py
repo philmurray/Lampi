@@ -140,10 +140,15 @@ class Idle(State):
     message_interval = int(lampiConfig['message_check_timeout'])
     long_press_time = int(lampiConfig['long_press_time'])
 
-    def __init__(self):
+    def __init__(self, slow = False):
         logging.debug("Entering Idle state")
 
-        ser.write(bytes('1n2n3n4nsn', 'UTF-8'))
+        ser.write(bytes('1n2n3n4n', 'UTF-8'))
+        if (slow):
+            ser.write(bytes('sm', 'UTF-8'))
+        else:
+            ser.write(bytes('sn', 'UTF-8'))
+            
         self.last_status_check = 0
         self.last_message_check = 0
 
@@ -276,7 +281,7 @@ class SendMessage(State):
             else:
                 ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
 
-        ser.write(bytes('s' + u, 'UTF-8'))
+        ser.write(bytes('su', 'UTF-8'))
 
         try:
             messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": button_key, "time": time.time(), "handled": False })

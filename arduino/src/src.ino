@@ -35,6 +35,7 @@
 
 #define STRIP_OFF 0
 #define STRIP_ON 1
+#define STRIP_FAST_ON 1
 #define STRIP_UP 2
 #define STRIP_RED 3
 #define STRIP_YELLOW 4
@@ -112,8 +113,6 @@ void setup(){
   sunEase.setTotalChangeInPosition(255 + SUN_FADE * 6);
   
   strip.begin();
-  
-  selectStripMode('n');
 }
 
 void loop(){
@@ -141,6 +140,8 @@ void startup() {
     digitalWrite(buttons[i][0], LOW);
   }
   starting_up = false;
+  
+  selectStripMode('m');
 }
 
 void selectThing(char thing) {
@@ -183,31 +184,43 @@ void selectMode(char mode) {
 }
 
 void selectStripMode(char mode) {
-  stripModeStart = millis();
-  strip.clear();
-  strip.show();
+  int newStripMode = 0;
+  
   switch (mode) {
     case 'f':
-      stripMode = STRIP_OFF;
+      newStripMode = STRIP_OFF;
+      break;
+    case 'm':
+      newStripMode = STRIP_ON;
       break;
     case 'n':
-      stripMode = STRIP_ON;
+      newStripMode = STRIP_FAST_ON;
+      for(uint8_t i=0; i<strip.numPixels(); i++) {
+        strip.setPixelColor(i, strip.Color(0,0,0,255));
+      }
+      strip.show();
       break;
     case 'u':
-      stripMode = STRIP_UP;
+      newStripMode = STRIP_UP;
       break;
     case '1':
-      stripMode = STRIP_RED;
+      newStripMode = STRIP_RED;
       break;
     case '2':
-      stripMode = STRIP_YELLOW;
+      newStripMode = STRIP_YELLOW;
       break;
     case '3':
-      stripMode = STRIP_GREEN;
+      newStripMode = STRIP_GREEN;
       break;
     case '4':
-      stripMode = STRIP_BLUE;
+      newStripMode = STRIP_BLUE;
       break;
+  }
+  if (stripMode != newStripMode) {
+    stripMode = newStripMode;
+    stripModeStart = millis();
+    strip.clear();
+    strip.show();
   }
 }
 
