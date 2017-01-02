@@ -17,7 +17,7 @@ def lights_message(serial, message, wait=True):
 	for c in message:
 		m += c
 		if len(m) == 2:
-			logging.debug('writing to serial: m' + )
+			logging.debug('writing to serial: ' + m)
 			serial.write(bytes(m, 'UTF-8'))
 			if wait:
 				time.sleep(0.01)
