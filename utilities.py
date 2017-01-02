@@ -9,8 +9,7 @@ def check_internet(host="8.8.8.8", port=53, timeout=3):
 	except Exception as ex:
 		return False
 
-def lights_message(serial, message, wait=True)
-
+def lights_message(serial, message, wait=True):
 	m = ''
 	for c in message:
 		m += c
