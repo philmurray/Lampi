@@ -90,7 +90,7 @@ def main():
         if not val["is_me"]:
             GPIO.setup(val["button_pin"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         else:
-            my_dict.pop(key)
+            lamps.pop(key)
             my_lamp = key
         utilities.lights_message(ser, val["light_pin"] + 'f')
 
