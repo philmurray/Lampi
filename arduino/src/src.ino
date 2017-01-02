@@ -190,37 +190,42 @@ void selectStripMode(char mode) {
   switch (mode) {
     case 'f':
       newStripMode = STRIP_OFF;
+      strip.clear(); 
       break;
     case 'm':
       newStripMode = STRIP_ON;
+      strip.clear();
       break;
     case 'n':
       newStripMode = STRIP_FAST_ON;
       for(uint8_t i=0; i<strip.numPixels(); i++) {
         strip.setPixelColor(i, strip.Color(0,0,0,255));
       }
-      strip.show();
       break;
     case 'u':
       newStripMode = STRIP_UP;
+      strip.clear();
       break;
     case '1':
       newStripMode = STRIP_RED;
+      strip.clear();
       break;
     case '2':
       newStripMode = STRIP_YELLOW;
+      strip.clear();
       break;
     case '3':
       newStripMode = STRIP_GREEN;
+      strip.clear();
       break;
     case '4':
       newStripMode = STRIP_BLUE;
+      strip.clear();
       break;
   }
   if (stripMode != newStripMode) {
     stripMode = newStripMode;
     stripModeStart = millis();
-    strip.clear();
     strip.show();
   }
 }
