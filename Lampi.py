@@ -263,7 +263,7 @@ class BuildMessage(State):
         global current_state
         global my_lamp
         if key == self.button_key:
-            current_state = HandleMessage(self.button_key, my_lamp)
+            current_state = HandleMessage(my_lamp, self.button_key)
         else:
             current_state = BuildMessage(key)
 
