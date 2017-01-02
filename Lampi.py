@@ -89,7 +89,7 @@ def main():
             GPIO.setup(val["button_pin"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         else:
             my_lamp = key
-        ser.write(bytes(val["light_pin"] + 'f', 'UTF-8'))
+        utilities.lights_message(ser, val["light_pin"] + 'f')
 
     pressed = ""
     pressed_start = 0
@@ -143,18 +143,18 @@ class Idle(State):
     def __init__(self, slow = False):
         logging.debug("Entering Idle state")
 
-        ser.write(bytes('1n2n3n4n', 'UTF-8'))
-        
+        utilities.lights_message(ser, '1n2n3n4n')
+
         if (slow):
-            ser.write(bytes('sm', 'UTF-8'))
+            utilities.lights_message(ser, 'sm')
         else:
-            ser.write(bytes('sn', 'UTF-8'))
+            utilities.lights_message(ser, 'sn')
 
         for key,val in lamps.items():
             if val["online"]:
-                ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'n')
             elif not val["is_me"]:
-                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'f')
 
         self.last_status_check = 0
         self.last_message_check = 0
@@ -172,11 +172,11 @@ class Idle(State):
                         doc = statusCollection.find_one({"lampId": key, "time":{"$gt": time.time() - Idle.status_interval * 2}})
                         if doc is None and val['online']:
                             val['online'] = False
-                            ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                            utilities.lights_message(ser, val['light_pin'] + 'f')
                             logging.debug(key + ' is not online.')
                         elif doc is not None and not val['online']:
                             val['online'] = True
-                            ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
+                            utilities.lights_message(ser, val['light_pin'] + 'n')
                             logging.debug(key + ' is online.')
             except Exception as e:
                 logging.error('failure getting lamp status.')
@@ -214,15 +214,15 @@ class Off(State):
         logging.debug("Entering Off state")
         for key,val in pins.items():
             if key == "b4":
-                ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'n')
             else:
-                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in lamps.items():
             if not val["is_me"]:
-                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'f')
 
-        ser.write(bytes('sf', 'UTF-8'))
+        utilities.lights_message(ser, 'sf')
 
     def run(self):
         pass
@@ -243,15 +243,15 @@ class BuildMessage(State):
 
         for key,val in lamps.items():
             if val["online"]:
-                ser.write(bytes(val['light_pin'] + 'b', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'b')
             elif not val["is_me"]:
-                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in pins.items():
             if self.button_key == key:
-                ser.write(bytes(val['light_pin'] + 'n', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'n')
             else:
-                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'f')
 
     def run(self):
         global current_state
@@ -260,7 +260,11 @@ class BuildMessage(State):
 
     def handleSymbolButton(self, key, time):
         global current_state
-        current_state = BuildMessage(key)
+        global my_lamp
+        if key == self.button_key:
+            current_state = HandleMessage(self.button_key, my_lamp)
+        else:
+            current_state = BuildMessage(key)
 
     def handleLampButton(self, key, time):
         global current_state
@@ -278,17 +282,17 @@ class SendMessage(State):
 
         for key,val in lamps.items():
             if lamp_key == key:
-                ser.write(bytes(val['light_pin'] + 's', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 's')
             else:
-                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in pins.items():
             if button_key == key:
-                ser.write(bytes(val['light_pin'] + 's', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 's')
             else:
-                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'f')
 
-        ser.write(bytes('su', 'UTF-8'))
+        utilities.lights_message(ser, 'su')
 
         try:
             messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": button_key, "time": time.time(), "handled": False })
@@ -310,17 +314,17 @@ class HandleMessage(State):
 
         for key,val in lamps.items():
             if lamp_key == key:
-                ser.write(bytes(val['light_pin'] + 's', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 's')
             else:
-                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in pins.items():
-            if button_key == key:
-                ser.write(bytes(val['light_pin'] + 's', 'UTF-8'))
+            if button_key == key and not val['is_me']:
+                utilities.lights_message(ser, val['light_pin'] + 's')
             else:
-                ser.write(bytes(val['light_pin'] + 'f', 'UTF-8'))
+                utilities.lights_message(ser, val['light_pin'] + 'f')
 
-        ser.write(bytes('s' + pins[button_key]["light_pin"], 'UTF-8'))
+        utilities.lights_message(ser, 's' + pins[button_key]["light_pin"])
 
     def run(self):
         global current_state
