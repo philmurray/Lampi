@@ -333,6 +333,6 @@ class HandleMessage(State):
     def run(self):
         global current_state
         if self.start_time + HandleMessage.timeout < time.time():
-            current_state = Idle()
+            current_state = Idle(True)
 
 main()
