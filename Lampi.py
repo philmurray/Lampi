@@ -299,7 +299,7 @@ class SendMessage(State):
         utilities.lights_message(ser, 'su')
 
         try:
-            messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": button_key, "time": time.time(), "handled": False })
+            messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": pins[button_key]['light_pin'], "time": time.time(), "handled": False })
         except:
             logging.error('failure sending message.')
 
