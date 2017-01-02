@@ -314,13 +314,13 @@ class HandleMessage(State):
         self.start_time = time.time()
 
         for key,val in lamps.items():
-            if lamp_key == key:
+            if lamp_key == key and not val['is_me']:
                 utilities.lights_message(ser, val['light_pin'] + 's')
             else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in pins.items():
-            if button_key == key and not val['is_me']:
+            if button_key == key:
                 utilities.lights_message(ser, val['light_pin'] + 's')
             else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
