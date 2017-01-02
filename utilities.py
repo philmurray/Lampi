@@ -1,5 +1,8 @@
 import socket
 import time
+import logging
+
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s')
 
 def check_internet(host="8.8.8.8", port=53, timeout=3):
 	try:
@@ -14,7 +17,8 @@ def lights_message(serial, message, wait=True):
 	for c in message:
 		m += c
 		if len(m) == 2:
-			serial.write(bytes(message, 'UTF-8'))
+			logging.debug('writing to serial: m' + )
+			serial.write(bytes(m, 'UTF-8'))
 			if wait:
 				time.sleep(0.01)
 			m = ''

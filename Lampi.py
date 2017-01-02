@@ -21,6 +21,7 @@ dbConfig = db_config['DbConfig']
 lampiConfig = config['Lampi']
 
 ser = serial.Serial(lampiConfig['Serial'], int(lampiConfig['BaudRate']), timeout=1)
+time.sleep(2)
 
 pins = {
     "b1": {
@@ -96,6 +97,9 @@ def main():
     pressed_start = 0
 
     while (True):
+        for line in ser.read():
+            logging.debug(str('serial char: ') + chr(line) )
+
         for key,val in pins.items():
             if pressed == "":
                 if GPIO.input(val["button_pin"]) == False:
