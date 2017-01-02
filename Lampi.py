@@ -98,6 +98,8 @@ def main():
     pressed = ""
     pressed_start = 0
 
+    current_state = Idle()
+    
     while (True):
         for key,val in pins.items():
             if pressed == "":
@@ -332,8 +334,5 @@ class HandleMessage(State):
         global current_state
         if self.start_time + HandleMessage.timeout < time.time():
             current_state = Idle()
-
-
-current_state = Idle()
 
 main()
