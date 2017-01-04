@@ -97,11 +97,15 @@ def main():
 
     pressed = ""
     pressed_start = 0
+    press_handled = False
+    long_press_time = int(lampiConfig['long_press_time'])
 
     current_state = Idle()
 
     while (True):
         current_state.run()
+        long_pressed = bool(pressed_start != 0 and time.time() - pressed_start > long_press_time)
+
         for key,val in pins.items():
             if pressed == "":
                 if GPIO.input(val["button_pin"]) == False:
@@ -109,23 +113,30 @@ def main():
                     pressed_start = time.time()
 
             elif pressed == key and GPIO.input(val["button_pin"]):
-                secs = time.time() - pressed_start
-                logging.debug("{} was pushed for {}".format(key, secs))
-                current_state.handleSymbolButton(key, secs)
+                if not press_handled:
+                    logging.debug("{} was pushed".format(key))
+                    current_state.handleSymbolButton(key)
                 pressed = ""
                 pressed_start = 0
-
+            elif pressed == key and long_pressed and not press_handled
+                pressed_start = 0
+                press_handled = current_state.handleSymbolLongPress(key)
 
         for key,val in lamps.items():
             if pressed == "":
                 if GPIO.input(val["button_pin"]) == False:
                     pressed = key
+                    pressed_start = time.time()
+
             elif pressed == key and GPIO.input(val["button_pin"]):
-                secs = time.time() - pressed_start
-                logging.debug("{} was pushed for {}".format(key, secs))
-                current_state.handleLampButton(key, secs)
+                if not press_handled:
+                    logging.debug("{} was pushed".format(key))
+                    current_state.handleLampButton(key)
                 pressed = ""
                 pressed_start = 0
+            elif pressed == key and long_pressed and not press_handled
+                pressed_start = 0
+                press_handled = current_state.handleLampLongPress(key)
 
         time.sleep(interval)
 
@@ -133,17 +144,23 @@ class State:
     def run(self):
         logging.error("not implemented")
 
-    def handleLampButton(self, key, time):
+    def handleLampButton(self, key):
         logging.error("not implemented")
 
-    def handleSymbolButton(self, key, time):
+    def handleLampLongPress(self, key):
+        logging.error("not implemented")
+        return False
+
+    def handleSymbolButton(self, key):
         logging.error("not implemented")
 
+    def handleSymbolLongPress(self, key):
+        logging.error("not implemented")
+        return False
 
 class Idle(State):
     status_interval = int(lampiConfig['status_check_timeout'])
     message_interval = int(lampiConfig['message_check_timeout'])
-    long_press_time = int(lampiConfig['long_press_time'])
 
     def __init__(self, slow = False):
         logging.debug("Entering Idle state")
@@ -206,12 +223,17 @@ class Idle(State):
 
             self.last_message_check = time.time()
 
-    def handleSymbolButton(self, key, tm):
+    def handleSymbolButton(self, key):
         global current_state
-        if tm >= Idle.long_press_time and key == "b4":
-            current_state = Off()
+        current_state = BuildMessage(key)
+
+    def handleSymbolLongPress(self, key):
+        global current_state
+        if key == "b4":
+            current_state = Idle()
+            return True
         else:
-            current_state = BuildMessage(key)
+            return False
 
 
 class Off(State):
@@ -231,7 +253,7 @@ class Off(State):
     def run(self):
         pass
 
-    def handleSymbolButton(self, key, time):
+    def handleSymbolButton(self, key):
         global current_state
         if key == "b4":
             current_state = Idle(True)
@@ -262,7 +284,7 @@ class BuildMessage(State):
         if self.start_time + BuildMessage.timeout < time.time():
             current_state = Idle()
 
-    def handleSymbolButton(self, key, time):
+    def handleSymbolButton(self, key):
         global current_state
         global my_lamp
         if key == self.button_key:
@@ -270,7 +292,7 @@ class BuildMessage(State):
         else:
             current_state = BuildMessage(key)
 
-    def handleLampButton(self, key, time):
+    def handleLampButton(self, key):
         global current_state
         if lamps[key]["online"]:
             current_state = SendMessage(key, self.button_key)
