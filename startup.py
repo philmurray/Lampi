@@ -29,18 +29,18 @@ def callStartup():
 		p = subprocess.Popen(os.path.join(cmddir, 'startup.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdout, stderr = p.communicate()
 		if stdout:
-		    logger.info(stdout)
+		    logging.info(stdout)
 		if stderr:
-		    logger.error(stderr)
+		    logging.error(stderr)
 
 		utilities.lights_message(ser, '3n4b')
 		logging.info("Running arduino install")
 		p = subprocess.Popen(os.path.join(cmddir, 'arduino/install.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdout, stderr = p.communicate()
 		if stdout:
-		    logger.info(stdout)
+		    logging.info(stdout)
 		if stderr:
-		    logger.error(stderr)
+		    logging.error(stderr)
 
 		time.sleep(1)
 		ser.close()
