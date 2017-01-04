@@ -26,7 +26,7 @@ def callStartup():
 	if (utilities.check_internet()):
 		utilities.lights_message(ser, '2n3b')
 		logging.info("Running startup.sh")
-		p = subprocess.popen(os.path.join(cmddir, 'startup.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		p = subprocess.Popen(os.path.join(cmddir, 'startup.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdout, stderr = p.communicate()
 		if stdout:
 		    logger.info(stdout)
@@ -35,7 +35,7 @@ def callStartup():
 
 		utilities.lights_message(ser, '3n4b')
 		logging.info("Running arduino install")
-		p = subprocess.call(os.path.join(cmddir, 'arduino/install.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		p = subprocess.Popen(os.path.join(cmddir, 'arduino/install.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdout, stderr = p.communicate()
 		if stdout:
 		    logger.info(stdout)
