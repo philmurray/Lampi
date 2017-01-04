@@ -111,6 +111,7 @@ def main():
                 if GPIO.input(val["button_pin"]) == False:
                     pressed = key
                     pressed_start = time.time()
+                    press_handled = False
 
             elif pressed == key and GPIO.input(val["button_pin"]):
                 if not press_handled:
@@ -118,7 +119,9 @@ def main():
                     current_state.handleSymbolButton(key)
                 pressed = ""
                 pressed_start = 0
+                press_handled = True
             elif pressed == key and long_pressed and not press_handled:
+                logging.debug("{} was long pressed".format(key))
                 pressed_start = 0
                 press_handled = current_state.handleSymbolLongPress(key)
 
@@ -127,6 +130,7 @@ def main():
                 if GPIO.input(val["button_pin"]) == False:
                     pressed = key
                     pressed_start = time.time()
+                    press_handled = False
 
             elif pressed == key and GPIO.input(val["button_pin"]):
                 if not press_handled:
@@ -134,7 +138,9 @@ def main():
                     current_state.handleLampButton(key)
                 pressed = ""
                 pressed_start = 0
+                press_handled = True
             elif pressed == key and long_pressed and not press_handled:
+                logging.debug("{} was long pressed".format(key))
                 pressed_start = 0
                 press_handled = current_state.handleLampLongPress(key)
 
