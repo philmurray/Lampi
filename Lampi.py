@@ -236,7 +236,7 @@ class Idle(State):
     def handleSymbolLongPress(self, key):
         global current_state
         if key == "b4":
-            current_state = Idle()
+            current_state = Off()
             return True
         else:
             return False
