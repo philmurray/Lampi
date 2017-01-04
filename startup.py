@@ -8,7 +8,7 @@ import os
 import logging
 import serial
 
-logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.CRITICAL)
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
 
 logging.info("Running startup.py")
 
