@@ -8,7 +8,7 @@ import os
 import logging
 import serial
 
-logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.CRITICAL)
 
 logging.info("Running startup.py")
 
@@ -26,13 +26,24 @@ def callStartup():
 	if (utilities.check_internet()):
 		utilities.lights_message(ser, '2n3b')
 		logging.info("Running startup.sh")
-		subprocess.call(os.path.join(cmddir, 'startup.sh'))
+		p = subprocess.popen(os.path.join(cmddir, 'startup.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		stdout, stderr = p.communicate()
+		if stdout:
+		    logger.info(stdout)
+		if stderr:
+		    logger.error(stderr)
+
 		utilities.lights_message(ser, '3n4b')
 		logging.info("Running arduino install")
-		subprocess.call(os.path.join(cmddir, 'arduino/install.sh'))
+		p = subprocess.call(os.path.join(cmddir, 'arduino/install.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+		stdout, stderr = p.communicate()
+		if stdout:
+		    logger.info(stdout)
+		if stderr:
+		    logger.error(stderr)
+
 		time.sleep(1)
 		ser.close()
-
 
 interval = float(startupConfig['InternetCheckInterval'])
 internetTimeout = time.time() + int(startupConfig['InternetWaitTimeout'])

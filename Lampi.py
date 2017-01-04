@@ -148,20 +148,20 @@ def main():
 
 class State:
     def run(self):
-        logging.error("not implemented")
+        logging.warning("not implemented")
 
     def handleLampButton(self, key):
-        logging.error("not implemented")
+        logging.warning("not implemented")
 
     def handleLampLongPress(self, key):
-        logging.error("not implemented")
+        logging.warning("not implemented")
         return False
 
     def handleSymbolButton(self, key):
-        logging.error("not implemented")
+        logging.warning("not implemented")
 
     def handleSymbolLongPress(self, key):
-        logging.error("not implemented")
+        logging.warning("not implemented")
         return False
 
 class Idle(State):
@@ -328,8 +328,12 @@ class SendMessage(State):
 
         try:
             messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": button_key, "time": time.time(), "handled": False })
-        except:
-            logging.error('failure sending message.')
+        except Exception as e:
+            logging.error('failure sending lamp message.')
+            if hasattr(e, 'message'):
+                logging.error(e.message)
+            else:
+                logging.error(e)
 
     def run(self):
         global current_state
