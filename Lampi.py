@@ -118,7 +118,7 @@ def main():
                     current_state.handleSymbolButton(key)
                 pressed = ""
                 pressed_start = 0
-            elif pressed == key and long_pressed and not press_handled
+            elif pressed == key and long_pressed and not press_handled:
                 pressed_start = 0
                 press_handled = current_state.handleSymbolLongPress(key)
 
@@ -134,7 +134,7 @@ def main():
                     current_state.handleLampButton(key)
                 pressed = ""
                 pressed_start = 0
-            elif pressed == key and long_pressed and not press_handled
+            elif pressed == key and long_pressed and not press_handled:
                 pressed_start = 0
                 press_handled = current_state.handleLampLongPress(key)
 
