@@ -1,5 +1,5 @@
 #!/bin/bash
 
 cd /home/pi/Lampi
-git pull --rebase
-pip3 install -r requirements.txt
+sudo git pull --rebase
+sudo pip3 install -r requirements.txt
