@@ -10,8 +10,8 @@ class State
     virtual void update();
     virtual void reset();
   protected:
-    long startTime;
-    long timeElapsed;
+    unsigned long startTime;
+    unsigned long timeElapsed;
 };
 
 #endif

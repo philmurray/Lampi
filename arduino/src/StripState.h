@@ -9,16 +9,14 @@
 class StripState : public State
 {
   public:
-    StripState(Adafruit_NeoPixel* str, StripStateStep *steps, byte len);
-    ~StripState();
+    StripState(Adafruit_NeoPixel* str, struct StripStateStep steps[], byte len);
     virtual void update ();
   protected:
     Adafruit_NeoPixel* strip;
-    struct StripStateStep *Steps;
+    StripStateStep* Steps;
     byte StepsLength;
   private:
-    int totalDuration;
-    int TimeOffset (int pin, StripStateStep step);
+    unsigned long totalDuration;
 };
 
 #endif

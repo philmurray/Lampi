@@ -6,15 +6,15 @@
 class Ease
 {
   public:
-    Ease(int min, int max, int duration, bool repeat);
-    virtual int Calc(int currentTime);
+    Ease(int min, int max, unsigned long duration, bool repeat);
+    virtual unsigned long Calc(unsigned long currentTime);
   protected:
-    int adjustedTime(int currentTime);
+    unsigned long adjustedTime(unsigned long currentTime);
     bool Repeat;
     int MinVal;
     int MaxVal;
-    int Duration;
-    int Reversed;
+    unsigned long Duration;
+    bool Reversed;
 };
 
 #endif

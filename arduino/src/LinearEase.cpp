@@ -1,11 +1,11 @@
 #include "Arduino.h"
 #include "LinearEase.h"
 
-int LinearEase::Calc(int currentTime)
+unsigned long LinearEase::Calc(unsigned long currentTime)
 {
-  int t = adjustedTime(currentTime);
+  unsigned long t = adjustedTime(currentTime);
   
   int val = MinVal + (MaxVal - MinVal)*(float(t)/float(Duration));
-  //Serial.println("currentTime: " + String(currentTime) + " t: " + String(t) + " val: " + String(val));
+  //Serial.println("currentTime: " + String(currentTime) + " t: " + String(t) + " val: " + String(val) + " reversed: " + String(Reversed));
   return val;
 }

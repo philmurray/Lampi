@@ -3,7 +3,7 @@
 #include "BlinkPinState.h"
 #include "State.h"
 
-BlinkPinState::BlinkPinState(int p, int ra, int ot)
+BlinkPinState::BlinkPinState(int p, unsigned long ra, unsigned long ot)
  : PinState(p)
 {
   repeatAfter = ra;
@@ -13,7 +13,7 @@ BlinkPinState::BlinkPinState(int p, int ra, int ot)
 void BlinkPinState::update()
 {
   PinState::update();
-  long t = timeElapsed % repeatAfter;
+  unsigned long t = timeElapsed % repeatAfter;
   if (t <= onTime)
   {
     digitalWrite(pin, HIGH);

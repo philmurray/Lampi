@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "Ease.h"
 
-Ease::Ease(int min, int max, int duration, bool repeat)
+Ease::Ease(int min, int max, unsigned long duration, bool repeat)
 {
   MinVal = min;
   MaxVal = max;
@@ -15,14 +15,14 @@ Ease::Ease(int min, int max, int duration, bool repeat)
   }
 }
 
-int Ease::Calc(int currentTime)
+unsigned long Ease::Calc(unsigned long currentTime)
 {
-  
+  return MaxVal;
 }
 
-int Ease::adjustedTime(int currentTime)
+unsigned long Ease::adjustedTime(unsigned long currentTime)
 {
-  int t;
+  unsigned long t;
   if (Repeat) {
     t = currentTime % Duration;
   }

@@ -2,17 +2,13 @@
 #define StripStateStep_h
 
 #include "Ease.h"
+#include "Selector.h"
 
 struct StripStateStep
 {
-  int StartTime;
-  int EndTime;
-  int MinRow;
-  int MaxRow;
-  int MinCol;
-  int MaxCol;
-  Ease* RowEase;
-  Ease* ColEase;
+  unsigned long StartTime;
+  unsigned long EndTime;
+  Selector* Selector;
   Ease* RedEase;
   Ease* BlueEase;
   Ease* GreenEase;

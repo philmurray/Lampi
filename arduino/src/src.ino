@@ -4,8 +4,13 @@
 #include "BlinkPinState.h"
 #include "StripState.h"
 #include "StripStateStep.h"
+
 #include "Ease.h"
 #include "LinearEase.h"
+
+#include "Selector.h"
+#include "BlockSelector.h"
+#include "RowWipeSelector.h"
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -28,22 +33,57 @@
 #define NUM_STATES 8
 #define STRIP_STATE 7
 
-State* States[8];
-
-StripStateStep On[]  = {
-  {0,-1,0,0,0,0,NULL, NULL, NULL, NULL, NULL, new LinearEase(0,255,1000, false)}
-};
-byte OnSize = 1;
-StripStateStep Off[]  = {
-  {0,-1,0,0,0,0,NULL, NULL, NULL, NULL, NULL, new LinearEase(255,0,1000, false)}
-};
-byte OffSize = 1;
-
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_PINS, NEOPIXEL_PIN, NEO_RGBW + NEO_KHZ800);
 char serial_char = 0;
 bool starting_up = true;
 int selectedState = -1;
 int selectedPin = -1;
+
+State* States[8];
+
+Selector AllSelector = Selector();
+
+BlockSelector Col123 = BlockSelector(0,5,0,2);
+BlockSelector Col456 = BlockSelector(0,5,3,5);
+BlockSelector Col78 = BlockSelector(0,5,6,7);
+BlockSelector Col910 = BlockSelector(0,5,8,9);
+BlockSelector Row12 = BlockSelector(0,1,0,9);
+BlockSelector Row34 = BlockSelector(2,3,0,9);
+BlockSelector Row56 = BlockSelector(4,5,0,9);
+
+LinearEase lEaseOn = LinearEase(0,255,1000, false);
+LinearEase lEaseOff = LinearEase(255,0,1000, false);
+LinearEase lEaseOnHalf = LinearEase(0,75,1000, false);
+LinearEase lEaseOffHalf = LinearEase(75,0,1000, false);
+
+StripStateStep On[]  = {
+  {0,-1,&AllSelector, NULL, NULL, NULL, &lEaseOn}
+};
+StripStateStep Off[]  = {
+  {0,-1,&AllSelector, NULL, NULL, NULL, &lEaseOff}
+};
+
+StripStateStep Test[]  = {
+ // {0,-1,new BlockSelector(0,0,0,0), NULL, NULL, NULL, &lEaseOnHalf}
+  {0,2000, &Col123, NULL, NULL, NULL, &lEaseOnHalf},
+  {2000,4000, &Col123, NULL, NULL, NULL, &lEaseOffHalf},
+  {500,2500,&Col456, &lEaseOnHalf, NULL, NULL, NULL},
+  {2500,4500,&Col456, &lEaseOffHalf, NULL, NULL, NULL},
+  {1000,3000,&Col78, NULL, &lEaseOnHalf, NULL, NULL},
+  {3000,5000,&Col78, NULL, &lEaseOffHalf, NULL, NULL},
+  {1500,3500,&Col910, NULL, NULL, &lEaseOnHalf, NULL},
+  {3500,5500,&Col910, NULL, NULL, &lEaseOffHalf, NULL},
+  {0,9000,&Row12, NULL, &lEaseOnHalf, &lEaseOnHalf, NULL},
+  {1500,9000,&Row34, &lEaseOnHalf, NULL, &lEaseOnHalf, NULL},
+  {3000,9000,&Row56, &lEaseOnHalf, &lEaseOnHalf, NULL, NULL},
+};
+
+
+StripState OnState = StripState(&strip, On, sizeof(On) / sizeof(On[0]));
+StripState OffState = StripState(&strip, Off, sizeof(Off) / sizeof(On[0]));
+StripState FastOnState = StripState(&strip, On, sizeof(On) / sizeof(On[0]));
+StripState TestState = StripState(&strip, Test, sizeof(Test) / sizeof(On[0]));
+
 
 void setup(){
   Serial.begin(9600);
@@ -153,13 +193,20 @@ void selectThing(char thing) {
 void selectStripMode(char mode) {
   switch (mode) {
     case 'f':
-      States[selectedState] = new StripState(&strip, Off, OffSize);
+      Serial.println("Entering Off State");
+      States[selectedState] = &OffState;
       break;
     case 'm':
-      States[selectedState] = new StripState(&strip, On, OnSize);
+      Serial.println("Entering On State");
+      States[selectedState] = &FastOnState;
       break;
     case 'n':
-      States[selectedState] = new StripState(&strip, On, OnSize);
+      Serial.println("Entering On State");
+      States[selectedState] = &OnState;
+      break;
+    case 't':
+      Serial.println("Entering Test State");
+      States[selectedState] = &TestState;
       break;
     case 'u':
 
@@ -177,6 +224,7 @@ void selectStripMode(char mode) {
 
       break;
   }
+  States[selectedState]->reset();
 
 }
 

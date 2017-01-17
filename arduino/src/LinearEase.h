@@ -7,9 +7,9 @@
 class LinearEase: public Ease
 {
   public:
-    LinearEase(int min, int max, int duration, bool repeat)
+    LinearEase(int min, int max, unsigned long duration, bool repeat)
       : Ease(min, max, duration, repeat) {}
-    virtual int Calc(int currentTime);
+    virtual unsigned long Calc(unsigned long currentTime);
 };
 
 #endif
