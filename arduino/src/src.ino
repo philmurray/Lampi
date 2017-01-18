@@ -1,4 +1,3 @@
-#include "State.h"
 #include "PinState.h"
 #include "OnOffPinState.h"
 #include "BlinkPinState.h"
@@ -30,16 +29,22 @@
 #define TOP_3_PIN 3
 
 #define NUM_PINS 7
-#define NUM_STATES 8
 #define STRIP_STATE 7
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_PINS, NEOPIXEL_PIN, NEO_RGBW + NEO_KHZ800);
 char serial_char = 0;
 bool starting_up = true;
-int selectedState = -1;
 int selectedPin = -1;
 
-State* States[8];
+int pins[] = {BOT_1_PIN, BOT_2_PIN, BOT_3_PIN, BOT_4_PIN, TOP_1_PIN, TOP_2_PIN, TOP_3_PIN};
+PinState* pinStates[7];
+
+OnOffPinState OnPin = OnOffPinState(true);
+OnOffPinState OffPin = OnOffPinState(false);
+BlinkPinState SlowBlink = BlinkPinState(500, 250);
+BlinkPinState FastBlink = BlinkPinState(200, 100);
+
+StripState* stripState;
 
 Selector AllSelector = Selector();
 
@@ -87,14 +92,10 @@ StripState TestState = StripState(&strip, Test, sizeof(Test) / sizeof(On[0]));
 
 void setup(){
   Serial.begin(9600);
-  pinMode(BOT_1_PIN, OUTPUT);
-  pinMode(BOT_2_PIN, OUTPUT);
-  pinMode(BOT_3_PIN, OUTPUT);
-  pinMode(BOT_4_PIN, OUTPUT);
-  pinMode(TOP_1_PIN, OUTPUT);
-  pinMode(TOP_2_PIN, OUTPUT);
-  pinMode(TOP_3_PIN, OUTPUT);
-
+  for (int i = 0; i < NUM_PINS; i++)
+  {
+    pinMode(pins[i], OUTPUT);
+  }
   strip.begin();
 }
 
@@ -106,22 +107,25 @@ void loop(){
   {
     if (Serial.available()) {
       serial_char = Serial.read();
-      if (selectedState == -1) {
+      if (selectedPin == -1) {
         selectThing(serial_char);
       } else {
         selectMode(serial_char);
       }
     }
 
-    for (int i = 0; i < NUM_STATES; i++)
+    for (int i = 0; i < NUM_PINS; i++)
     {
-        State* s = States[i];
+        PinState* s = pinStates[i];
         if (s != NULL)
         {
-          s->update();
+          s->update(pins[i]);
         }
     }
-
+    if (stripState != NULL)
+    {
+      stripState->update();
+    }
   }
 }
 
@@ -145,47 +149,40 @@ void blink(int pin)
 }
 
 void selectMode(char mode) {
-  if (selectedState < NUM_PINS) {
+  if (selectedPin < NUM_PINS) {
     selectButtonMode(mode);
-  } else if (selectedState == STRIP_STATE) {
+  } else if (selectedPin == STRIP_STATE) {
     selectStripMode(mode);
   }
 
-  selectedState = -1;
+  selectedPin = -1;
 }
 
 void selectThing(char thing) {
   switch (thing) {
     case '1':
-      selectedState = 0;
-      selectedPin = BOT_1_PIN;
+      selectedPin = 0;
       break;
     case '2':
-      selectedState = 1;
-      selectedPin = BOT_2_PIN;
+      selectedPin = 1;
       break;
     case '3':
-      selectedState = 2;
-      selectedPin = BOT_3_PIN;
+      selectedPin = 2;
       break;
     case '4':
-      selectedState = 3;
-      selectedPin = BOT_4_PIN;
+      selectedPin = 3;
       break;
     case 'a':
-      selectedState = 4;
-      selectedPin = TOP_1_PIN;
+      selectedPin = 4;
       break;
     case 'b':
-      selectedState = 5;
-      selectedPin = TOP_2_PIN;
+      selectedPin = 5;
       break;
     case 'c':
-      selectedState = 6;
-      selectedPin = TOP_3_PIN;
+      selectedPin = 6;
       break;
     case 's':
-      selectedState = STRIP_STATE;
+      selectedPin = STRIP_STATE;
       break;
   }
 }
@@ -194,19 +191,19 @@ void selectStripMode(char mode) {
   switch (mode) {
     case 'f':
       Serial.println("Entering Off State");
-      States[selectedState] = &OffState;
+      stripState = &OffState;
       break;
     case 'm':
       Serial.println("Entering On State");
-      States[selectedState] = &FastOnState;
+      stripState = &FastOnState;
       break;
     case 'n':
       Serial.println("Entering On State");
-      States[selectedState] = &OnState;
+      stripState = &OnState;
       break;
     case 't':
       Serial.println("Entering Test State");
-      States[selectedState] = &TestState;
+      stripState = &TestState;
       break;
     case 'u':
 
@@ -224,202 +221,23 @@ void selectStripMode(char mode) {
 
       break;
   }
-  States[selectedState]->reset();
+  stripState->reset();
 
 }
 
 void selectButtonMode(char mode) {
     switch (mode) {
       case 'n':
-      {
-        States[selectedState] = new OnOffPinState(selectedPin, true);
-      }
+        pinStates[selectedPin] = &OnPin;
         break;
       case 'f':
-      {
-        States[selectedState] = new OnOffPinState(selectedPin, false);
-      }
+        pinStates[selectedPin] = &OffPin;
         break;
       case 'b':
-      {
-        States[selectedState] = new BlinkPinState(selectedPin, 500, 250);
-      }
+        pinStates[selectedPin] = &SlowBlink;
         break;
       case 's':
-      {
-        States[selectedState] = new BlinkPinState(selectedPin, 200, 100);
-      }
+        pinStates[selectedPin] = &FastBlink;
         break;
     }
-    selectedPin = -1;
 }
-//
-// void displayUp(unsigned long currentTime, unsigned long timePassed)
-// {
-//   uint8_t minLight = (currentTime / UP_SPEED) % UP_REPEAT;
-//   uint8_t maxLight = (currentTime / UP_SPEED + UP_LENGTH) % UP_REPEAT;
-//
-//   for(uint8_t i=0; i<strip.numPixels(); i++) {
-//     uint8_t light = i % UP_REPEAT;
-//     if ((minLight < maxLight && light > minLight && light <= maxLight) || (minLight > maxLight && (light <= maxLight || light > minLight)))
-//     {
-//       strip.setPixelColor(i, strip.Color(0,0,0,255));
-//     }
-//     else
-//     {
-//       strip.setPixelColor(i, strip.Color(0,0,0,0));
-//     }
-//   }
-//   strip.show();
-// }
-//
-// void displayOn(unsigned long currentTime, unsigned long timePassed)
-// {
-//   if ( timePassed < ON_OFF_DURATION) {
-//     for(uint8_t i=0; i<strip.numPixels(); i++) {
-//       int val = onOffEase.easeIn(timePassed) - i * ON_OFF_FADE;
-//       strip.setPixelColor(i, strip.Color(0,0,0,constrain(val, 0, 255)));
-//     }
-//     strip.show();
-//   }
-// }
-// void displayOff(unsigned long currentTime, unsigned long timePassed)
-// {
-//   if ( timePassed < ON_OFF_DURATION) {
-//     for(uint8_t i=0; i<strip.numPixels(); i++) {
-//       int val = 255 - constrain(onOffEase.easeOut(timePassed) - i * ON_OFF_FADE, 0, 255);
-//       strip.setPixelColor(i, strip.Color(0,0,0,val));
-//     }
-//     strip.show();
-//   }
-// }
-// void displayRed(unsigned long currentTime, unsigned long timePassed)
-// {
-//   timePassed = timePassed % (HEARTBEAT_DURATION * 5);
-//
-//   if (timePassed > 0 && timePassed < HEARTBEAT_DURATION)
-//   {
-//
-//   }
-//   else
-//   {
-//     timePassed -= HEARTBEAT_DURATION;
-//   }
-//
-//   if (timePassed > 0 && timePassed < HEARTBEAT_DURATION)
-//   {
-//     for(uint8_t i=0; i<strip.numPixels(); i++) {
-//       int val = heartEase.easeIn(timePassed);
-//       strip.setPixelColor(i, strip.Color(0,constrain(val, 0, 255),0,0));
-//     }
-//   }
-//   else
-//   {
-//     timePassed -= HEARTBEAT_DURATION;
-//   }
-//
-//   if (timePassed > 0 && timePassed > HEARTBEAT_DURATION)
-//   {
-//     for(uint8_t i=0; i<strip.numPixels(); i++) {
-//       int val = 255 - heartEase.easeOut(timePassed);
-//       strip.setPixelColor(i, strip.Color(0, constrain(val, 0, 255),0,0));
-//     }
-//   }
-//   else
-//   {
-//     timePassed -= HEARTBEAT_DURATION;
-//   }
-//
-//   if (timePassed > 0 && timePassed < HEARTBEAT_DURATION)
-//   {
-//     for(uint8_t i=0; i<strip.numPixels(); i++) {
-//       int val = heartEase.easeIn(timePassed);
-//       strip.setPixelColor(i, strip.Color(0, constrain(val, 0, 255),0,0));
-//     }
-//   }
-//   else
-//   {
-//     timePassed -= HEARTBEAT_DURATION;
-//   }
-//
-//   if (timePassed > 0 && timePassed > HEARTBEAT_DURATION)
-//   {
-//     for(uint8_t i=0; i<strip.numPixels(); i++) {
-//       int val = 255 - heartEase.easeOut(timePassed);
-//       strip.setPixelColor(i, strip.Color(0, constrain(val, 0, 255),0,0));
-//     }
-//   }
-//   else
-//   {
-//     timePassed -= HEARTBEAT_DURATION;
-//   }
-//
-//   strip.show();
-// }
-//
-// void displayYellow(unsigned long currentTime, unsigned long timePassed)
-// {
-//   if ( timePassed < SUN_DURATION * 1.5) {
-//     for(uint8_t i=0; i<strip.numPixels(); i++) {
-//       int val = sunEase.easeIn(timePassed) - (int(i / 10) * SUN_FADE);
-//       strip.setPixelColor(i, strip.Color(constrain(val, 0, 255) * 0.5f,constrain(val, 0, 255),0,0));
-//     }
-//   }
-//
-//   if ( timePassed > SUN_DURATION * 1.5 && timePassed < MODE_DURATION) {
-//     for(uint8_t i=0; i<strip.numPixels(); i++) {
-//       int val = 255 - constrain(sunEase.easeOut(timePassed - SUN_DURATION * 1.5) - (int(((strip.numPixels() - 1) - i) / 10) * SUN_FADE), 0, 255);
-//       strip.setPixelColor(i, strip.Color(val * 0.5f,val,0,0));
-//     }
-//   }
-//   strip.show();
-// }
-//
-// void displayGreen(unsigned long currentTime, unsigned long timePassed)
-// {
-//   uint8_t step = MODE_DURATION / strip.numPixels();
-//
-//   if ( timePassed < MODE_DURATION / 2)
-//   {
-//     for(uint8_t i=0; i<strip.numPixels()/2; i++) {
-//       if (timePassed > i * step) {
-//         strip.setPixelColor(i, strip.Color(255,0,0,0));
-//         strip.setPixelColor((strip.numPixels() - 1) - i, strip.Color(255,0,0,0));
-//       }
-//     }
-//   }
-//   else
-//   {
-//     for(uint8_t i=0; i<strip.numPixels()/2; i++) {
-//       int s = strip.numPixels()/2 - 1 - i;
-//       if ((timePassed - MODE_DURATION / 2) > s * step) {
-//         strip.setPixelColor(i, strip.Color(0,0,0,0));
-//         strip.setPixelColor((strip.numPixels() - 1) - i, strip.Color(0,0,0,0));
-//       }
-//     }
-//   }
-//   strip.show();
-// }
-//
-// void displayBlue(unsigned long currentTime, unsigned long timePassed)
-// {
-//   if (timePassed < MODE_DURATION - MEDIUM_FADE_DURATION)
-//   {
-//     //pick a random pixel every ... some amount of time.  turn it on
-//     if (timePassed % 10 == 0)
-//     {
-//       int i = random(0, strip.numPixels());
-//       strip.setPixelColor(i, strip.Color(0, 0, 255 ,0));
-//     }
-//
-//     //cool stuff
-//   }
-//   else if (timePassed > MODE_DURATION - MEDIUM_FADE_DURATION && timePassed < MODE_DURATION)
-//   {
-//     for(uint8_t i=0; i<strip.numPixels(); i++) {
-//       int val = 255 - constrain(mediumEase.easeOut(timePassed - (MODE_DURATION - MEDIUM_FADE_DURATION)), 0, 255);
-//       strip.setPixelColor(i, strip.Color(0, 0, val ,0));
-//     }
-//   }
-//   strip.show();
-// }

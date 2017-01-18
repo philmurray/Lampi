@@ -2,15 +2,12 @@
 #define PinState_h
 
 #include "Arduino.h"
-#include "State.h"
 
-class PinState : public State
+class PinState
 {
   public:
-    PinState(int p);
-    virtual void update ();
-  protected:
-    int pin;
+    PinState();
+    virtual void update (int pin);
 };
 
 #endif

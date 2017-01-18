@@ -1,22 +1,26 @@
 #include "Arduino.h"
 #include "StripState.h"
-#include "State.h"
 #include "StripStateStep.h"
 #include <Adafruit_NeoPixel.h>
 
 #define STRIP_PINS 60
 
 StripState::StripState(Adafruit_NeoPixel* str, struct StripStateStep steps[], byte len)
- : State()
 {
     strip = str;
     StepsLength = len;
     Steps = steps;
 }
 
+void StripState::reset()
+{
+  timeElapsed = 0;
+  startTime = millis();
+}
+
 void StripState::update()
 {
-  State::update();
+  timeElapsed = millis() - startTime;
   //Serial.println("updating stripState" + String(timeElapsed));
 
 

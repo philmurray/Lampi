@@ -3,13 +3,12 @@
 
 #include "Arduino.h"
 #include "PinState.h"
-#include "State.h"
 
 class BlinkPinState : public PinState
 {
   public:
-    BlinkPinState(int p, unsigned long ra, unsigned long ot);
-    virtual void update();
+    BlinkPinState(unsigned long ra, unsigned long ot);
+    virtual void update(int pin);
   protected:
     unsigned long repeatAfter;
     unsigned long onTime;

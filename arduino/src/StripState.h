@@ -3,20 +3,21 @@
 
 #include <Adafruit_NeoPixel.h>
 #include "Arduino.h"
-#include "State.h"
 #include "StripStateStep.h"
 
-class StripState : public State
+class StripState
 {
   public:
     StripState(Adafruit_NeoPixel* str, struct StripStateStep steps[], byte len);
-    virtual void update ();
+    void update ();
+    void reset();
   protected:
     Adafruit_NeoPixel* strip;
     StripStateStep* Steps;
     byte StepsLength;
   private:
-    unsigned long totalDuration;
+    unsigned long startTime;
+    unsigned long timeElapsed;
 };
 
 #endif

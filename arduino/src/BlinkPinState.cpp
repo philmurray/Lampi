@@ -1,19 +1,18 @@
 #include "Arduino.h"
 #include "PinState.h"
 #include "BlinkPinState.h"
-#include "State.h"
 
-BlinkPinState::BlinkPinState(int p, unsigned long ra, unsigned long ot)
- : PinState(p)
+BlinkPinState::BlinkPinState(unsigned long ra, unsigned long ot)
+ : PinState()
 {
   repeatAfter = ra;
   onTime = ot;
 }
 
-void BlinkPinState::update()
+void BlinkPinState::update(int pin)
 {
-  PinState::update();
-  unsigned long t = timeElapsed % repeatAfter;
+  PinState::update(pin);
+  unsigned long t = millis() % repeatAfter;
   if (t <= onTime)
   {
     digitalWrite(pin, HIGH);

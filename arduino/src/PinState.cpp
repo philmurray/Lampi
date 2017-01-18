@@ -1,14 +1,10 @@
 #include "Arduino.h"
-#include "State.h"
 #include "PinState.h"
 
-PinState::PinState(int p)
- : State()
+PinState::PinState()
 {
-  pin = p;
 }
 
-void PinState::update()
+void PinState::update(int pin)
 {
-  State::update();
 }

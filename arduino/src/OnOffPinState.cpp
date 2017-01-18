@@ -2,10 +2,15 @@
 #include "PinState.h"
 #include "OnOffPinState.h"
 
-OnOffPinState::OnOffPinState(int p, bool b)
- : PinState(p)
+OnOffPinState::OnOffPinState(bool b)
+ : PinState()
 {
   on = b;
+}
+
+void OnOffPinState::update(int pin)
+{
+  PinState::update(pin);
   if (on) {
     digitalWrite(pin, HIGH);
   }
@@ -13,3 +18,4 @@ OnOffPinState::OnOffPinState(int p, bool b)
     digitalWrite(pin, LOW);
   }
 }
+
