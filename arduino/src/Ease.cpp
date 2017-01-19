@@ -23,8 +23,13 @@ unsigned long Ease::Calc(unsigned long currentTime)
 unsigned long Ease::adjustedTime(unsigned long currentTime)
 {
   unsigned long t;
-  if (Repeat) {
-    t = currentTime % Duration;
+  if (Repeat) 
+  {
+	  t = currentTime % (Duration * 2);
+	  if (t > Duration)
+	  {
+		  t = Duration * 2 - t;
+	  }
   }
   else
   {

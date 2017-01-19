@@ -35,7 +35,7 @@ void StripState::update()
     {
       unsigned long st = timeElapsed;
       StripStateStep step = Steps[s];
-      if (step.StartTime <= st && step.EndTime > st)
+      if (step.StartTime <= st && step.Duration > st - step.StartTime)
       {
         st = st - step.StartTime;
         //Serial.println(String(timeElapsed) + " " + String(step.StartTime) + " " + String(st) + " " +  String(step.EndTime));
@@ -49,7 +49,7 @@ void StripState::update()
           pt = step.Selector->getPinTime(st, pin);
         }
         
-        if (pt <= st)
+        if (pt != long(-1))
         {
           if (step.RedEase != NULL)
           {

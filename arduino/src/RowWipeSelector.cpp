@@ -11,8 +11,9 @@ RowWipeSelector::RowWipeSelector(int minR, int maxR, int minC, int maxC, Ease* e
 unsigned long RowWipeSelector::getPinTime(unsigned long currentTime, int pin)
 {
   unsigned long t = BlockSelector::getPinTime(currentTime, pin);
-  if (t >= 0)
+  if (t != long(-1))
   {
-    return currentTime;
+	  t = t - ease->Calc(currentRow - minRow);
   }
+  return t;
 }

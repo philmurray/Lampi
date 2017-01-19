@@ -7,7 +7,7 @@
 struct StripStateStep
 {
   unsigned long StartTime;
-  unsigned long EndTime;
+  unsigned long Duration;
   Selector* Selector;
   Ease* RedEase;
   Ease* BlueEase;

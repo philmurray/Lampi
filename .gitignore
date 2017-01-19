@@ -2,3 +2,6 @@ logs
 __pycache__
 md5hash
 db_config.ini
+__vm
+src.vcxproj
+src.vcxproj.filters
