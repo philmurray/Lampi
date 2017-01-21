@@ -8,10 +8,10 @@ RowRunnerSelector::RowRunnerSelector(int minR, int maxR, int minC, int maxC, uns
 	Speed = s;
 	Length = l;
 	Repeat = r;
-  Reversed = rev;
+	Reversed = rev;
 
-  TotalDuration = Speed * Repeat;
-  OnMidpoint = (Speed * Length) / 2;
+	TotalDuration = Speed * Repeat;
+	OnMidpoint = (Speed * Length) / 2;
 }
 
 unsigned long RowRunnerSelector::getPinTime(unsigned long currentTime, int pin)
@@ -27,7 +27,7 @@ unsigned long RowRunnerSelector::getPinTime(unsigned long currentTime, int pin)
 		int maxR = t / Speed;
 		int minR = ((maxR - Length) + 1 + Repeat) % Repeat;
 
-		int r = currentRow % Repeat;
+		int r = getDimension() % Repeat;
 		if ((minR <= maxR && r >= minR && r <= maxR) || (minR > maxR && (r <= maxR || r >= minR)))
 		{
 			t = (t + TotalDuration - (r * Speed)) % TotalDuration;
@@ -43,3 +43,10 @@ unsigned long RowRunnerSelector::getPinTime(unsigned long currentTime, int pin)
 	}
 	return t;
 }
+
+int RowRunnerSelector::getDimension()
+{
+	return currentRow;
+}
+
+

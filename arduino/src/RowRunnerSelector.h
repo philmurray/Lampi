@@ -14,9 +14,11 @@ protected:
 	unsigned long Speed;
 	int Length;
 	int Repeat;
-  bool Reversed;
-  unsigned long TotalDuration;
-  unsigned long OnMidpoint;
+	bool Reversed;
+	unsigned long TotalDuration;
+	unsigned long OnMidpoint;
+
+	virtual int getDimension();
 };
 
 #endif

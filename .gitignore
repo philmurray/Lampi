@@ -5,3 +5,6 @@ db_config.ini
 __vm
 src.vcxproj
 src.vcxproj.filters
+.vs
+Debug
+src.sln
