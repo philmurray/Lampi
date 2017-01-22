@@ -8,12 +8,13 @@
 class RowWipeSelector : public BlockSelector
 {
   public:
-    RowWipeSelector(int minR, int maxR, int minC, int maxC, Ease* e, bool r);
+    RowWipeSelector(int minR, int maxR, int minC, int maxC, unsigned long duration, bool forwards, bool r);
     virtual unsigned long getPinTime(unsigned long currentTime, int pin);
   protected:
-    Ease* ease;
 	bool Reverse;
-	virtual int getDimensionDifference();
+	bool Forwards;
+	unsigned long Duration;
+	virtual unsigned long getTimeOffset();
 };
 
 #endif

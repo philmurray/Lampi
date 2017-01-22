@@ -2,11 +2,12 @@
 #include "RowWipeSelector.h"
 #include "BlockSelector.h"
 
-RowWipeSelector::RowWipeSelector(int minR, int maxR, int minC, int maxC, Ease* e, bool r)
+RowWipeSelector::RowWipeSelector(int minR, int maxR, int minC, int maxC, unsigned long duration, bool forwards, bool r)
  : BlockSelector(minR, maxR, minC, maxC)
 {
-  ease = e;
   Reverse = r;
+  Forwards = forwards;
+  Duration = duration;
 }
 
 unsigned long RowWipeSelector::getPinTime(unsigned long currentTime, int pin)
@@ -16,17 +17,27 @@ unsigned long RowWipeSelector::getPinTime(unsigned long currentTime, int pin)
   {
 	  if (Reverse)
 	  {
-		  t = (ease->MaxVal - ease->Calc(getDimensionDifference())) - t;
+		  t = (Duration - getTimeOffset()) - t;
 	  }
 	  else
 	  {
-		  t = t - ease->Calc(getDimensionDifference());
+		  t = t - getTimeOffset();
 	  }
   }
   return t;
 }
 
-int RowWipeSelector::getDimensionDifference()
+unsigned long RowWipeSelector::getTimeOffset()
 {
-	return currentRow - minRow;
+	float progress;
+	if (Forwards)
+	{
+		progress = float(currentRow - minRow);
+	}
+	else
+	{
+		progress = float(maxRow - currentRow);
+	}
+	progress = progress / float(1 + maxRow - minRow);
+	return Duration * progress;
 }

@@ -171,12 +171,7 @@ class Idle(State):
     def __init__(self, slow = False):
         logging.debug("Entering Idle state")
 
-        utilities.lights_message(ser, '1n2n3n4n')
-
-        if (slow):
-            utilities.lights_message(ser, 'sm')
-        else:
-            utilities.lights_message(ser, 'sn')
+        utilities.lights_message(ser, '1n2n3n4nsn')
 
         for key,val in lamps.items():
             if val["online"]:
@@ -262,7 +257,7 @@ class Off(State):
     def handleSymbolButton(self, key):
         global current_state
         if key == "b4":
-            current_state = Idle(True)
+            current_state = Idle()
 
 
 class BuildMessage(State):
@@ -365,6 +360,6 @@ class HandleMessage(State):
     def run(self):
         global current_state
         if self.start_time + HandleMessage.timeout < time.time():
-            current_state = Idle(True)
+            current_state = Idle()
 
 main()

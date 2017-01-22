@@ -1,6 +1,16 @@
 #include "ColWipeSelector.h"
 
-int ColWipeSelector::getDimensionDifference()
+unsigned long ColWipeSelector::getTimeOffset()
 {
-	return currentCol - minCol;
+	float progress;
+	if (Forwards)
+	{
+		progress = float(currentCol - minCol);
+	}
+	else
+	{
+		progress = float(maxCol - currentCol);
+	}
+	progress = progress / float(1 + maxCol - minCol);
+	return Duration * progress;
 }

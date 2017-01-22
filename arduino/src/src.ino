@@ -72,33 +72,57 @@ StripStateStep Up[] = {
 };
 StripState UpState = StripState(&strip, Up, sizeof(Up) / sizeof(On[0]));
 
-
-LinearEase s1e1 = LinearEase(0, 2000, 6, false);
-LinearEase s1e2 = LinearEase(0, 2000, 5, false);
-LinearEase s1e3 = LinearEase(2000, 0, 5, false);
-
-SineEase s1e4 = SineEase(0, 255, 750, false);
-RowWipeSelector s1s1 = RowWipeSelector(0, 5, 4, 5, &s1e1, false);
-ColWipeSelector s1s2 = ColWipeSelector(3, 5, 0, 4, &s1e3, false);
-ColWipeSelector s1s3 = ColWipeSelector(3, 5, 5, 9, &s1e2, false);
-
+Ease s1e1 = Ease(0, 20, 0, false);
+SineEase s1e2 = SineEase(0, 255, 250, true);
 StripStateStep State_1_steps[] = {
-	{ 0,-1,&s1s1, &s1e4, 0,0,0 },
-	{ 2000,-1,&s1s2, &s1e4, 0,0,0 },
-	{ 2000,-1,&s1s3, &s1e4, 0,0,0 }
+	{ 0, -1, &AllSelector, 0, 0, &s1e1, &s1e1 },
+	{ 500, 1000, &AllSelector, 0, 0, &s1e2, 0 },
+	{ 2250, 1000, &AllSelector, 0, 0, &s1e2, 0 },
+	{ 4000, 1000, &AllSelector, 0, 0, &s1e2, 0 }
 };
 StripState State_1 = StripState(&strip, State_1_steps, sizeof(State_1_steps) / sizeof(On[0]));
 
-LinearEase s2e1 = LinearEase(0, 3000, 6, false);
 LinearEase s2e3 = LinearEase(0, 255, 3000, false);
 LinearEase s2e4 = LinearEase(0, 200, 3000, false);
-RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, &s2e1, false);
-RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, &s2e1, true);
+RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 3000, true, false);
+RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, 3000, true, true);
 StripStateStep State_2_steps[] = {
 	{ 0,3000,&s2s1, &s2e4, 0,&s2e3,0 },
-	{ 3000,3000,&s2s2, &s2e4, 0, &s2e3, 0}
+	{ 3000,3000,&s2s2, &s2e4, 0, &s2e3, 0 }
 };
 StripState State_2 = StripState(&strip, State_2_steps, sizeof(State_2_steps) / sizeof(On[0]));
+
+SineEase s3e1 = SineEase(0, 255, 750, false);
+SineEase s3e2 = SineEase(0, 120, 750, false);
+SineEase s3e3 = SineEase(0, 0, 750, false);
+SineEase s3e4 = SineEase(0, 50, 750, false);
+RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 5, 2000, true, false);
+ColWipeSelector s3s2 = ColWipeSelector(3, 5, 0, 4, 2000, false, false);
+ColWipeSelector s3s3 = ColWipeSelector(3, 5, 5, 9, 2000, true, false);
+StripStateStep State_3_steps[] = {
+	{ 0,-1,&s3s1, &s3e2, &s3e3, &s3e4,0 },
+	{ 2000,-1,&s3s2, &s3e1, 0,0,0 },
+	{ 2000,-1,&s3s3, &s3e1, 0,0,0 }
+};
+StripState State_3 = StripState(&strip, State_3_steps, sizeof(State_3_steps) / sizeof(On[0]));
+
+LinearEase s4e1 = LinearEase(0, 200, 4000, false);
+LinearEase s4e2 = LinearEase(0, 10, 4000, false);
+RowRunnerSelector s4s1 = RowRunnerSelector(0, 5, 5, 5, 100, 1, 7, true);
+RowRunnerSelector s4s2 = RowRunnerSelector(0, 5, 3, 3, 100, 1, 13, true);
+RowRunnerSelector s4s3 = RowRunnerSelector(0, 5, 4, 4, 100, 1, 19, true);
+RowRunnerSelector s4s4 = RowRunnerSelector(0, 5, 1, 1, 100, 1, 11, true);
+RowRunnerSelector s4s5 = RowRunnerSelector(0, 5, 7, 7, 100, 1, 17, true);
+RowWipeSelector s4s6 = RowWipeSelector(0, 5, 0, 9, 4000, true, false);
+StripStateStep State_4_steps[] = {
+	{ 0,5000,&s4s1, 0, &OnNow, 0 ,0 },
+	{ 0,5000,&s4s2, 0, &OnNow, 0 ,0 },
+	{ 0,5000,&s4s3, 0, &OnNow, 0 ,0 },
+	{ 0,5000,&s4s4, 0, &OnNow, 0 ,0 },
+	{ 0,5000,&s4s5, 0, &OnNow, 0 ,0 },
+	{ 1000,-1,&s4s6, 0, &s4e1, 0 ,&s4e2 },
+};
+StripState State_4 = StripState(&strip, State_4_steps, sizeof(State_4_steps) / sizeof(On[0]));
 
 //
 //StripStateStep Test[]  = {
@@ -283,14 +307,18 @@ void selectStripMode(char mode) {
 
       break;
     case '2':
-		Serial.println("Entering 1 State");
+		Serial.println("Entering 2 State");
 		stripState = &State_2;
 
       break;
     case '3':
+		Serial.println("Entering 3 State");
+		stripState = &State_3;
 
       break;
     case '4':
+		Serial.println("Entering 4 State");
+		stripState = &State_4;
 
       break;
 	case '5':
