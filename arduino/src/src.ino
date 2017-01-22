@@ -82,13 +82,13 @@ StripStateStep State_1_steps[] = {
 };
 StripState State_1 = StripState(&strip, State_1_steps, sizeof(State_1_steps) / sizeof(On[0]));
 
-LinearEase s2e3 = LinearEase(0, 255, 3000, false);
-LinearEase s2e4 = LinearEase(0, 200, 3000, false);
+LinearEase s2e3 = LinearEase(0, 255, 2500, false);
+LinearEase s2e4 = LinearEase(0, 100, 2500, false);
 RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 3000, true, false);
 RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, 3000, true, true);
 StripStateStep State_2_steps[] = {
-	{ 0,3000,&s2s1, &s2e4, 0,&s2e3,0 },
-	{ 3000,3000,&s2s2, &s2e4, 0, &s2e3, 0 }
+	{ 0,4000,&s2s1, &s2e4, 0,&s2e3,0 },
+	{ 4000,3000,&s2s2, &s2e4, 0, &s2e3, 0 }
 };
 StripState State_2 = StripState(&strip, State_2_steps, sizeof(State_2_steps) / sizeof(On[0]));
 
@@ -96,9 +96,9 @@ SineEase s3e1 = SineEase(0, 255, 750, false);
 SineEase s3e2 = SineEase(0, 120, 750, false);
 SineEase s3e3 = SineEase(0, 0, 750, false);
 SineEase s3e4 = SineEase(0, 50, 750, false);
-RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 5, 2000, true, false);
-ColWipeSelector s3s2 = ColWipeSelector(3, 5, 0, 4, 2000, false, false);
-ColWipeSelector s3s3 = ColWipeSelector(3, 5, 5, 9, 2000, true, false);
+RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 4, 2000, true, false);
+ColWipeSelector s3s2 = ColWipeSelector(0, 5, 0, 4, 2000, false, false);
+ColWipeSelector s3s3 = ColWipeSelector(0, 5, 4, 9, 2000, true, false);
 StripStateStep State_3_steps[] = {
 	{ 0,-1,&s3s1, &s3e2, &s3e3, &s3e4,0 },
 	{ 2000,-1,&s3s2, &s3e1, 0,0,0 },
@@ -124,69 +124,6 @@ StripStateStep State_4_steps[] = {
 };
 StripState State_4 = StripState(&strip, State_4_steps, sizeof(State_4_steps) / sizeof(On[0]));
 
-//
-//StripStateStep Test[]  = {
-//  {0, -1, &runner, NULL, NULL, NULL, &lEaseOnHalf },
-//  //{0, -1, &runner2, NULL, NULL, &lEaseOnHalf, NULL },
-//  //{ 0, -1, &WipeUp, &EaseInOut, NULL, NULL, NULL },
-//  //{ 0, -1, &WipeOver, NULL, &EaseInOut, NULL, NULL }
-//  //{0,-1,new BlockSelector(0,0,0,0), NULL, NULL, NULL, &lEaseOnHalf}
-//  //{0,2000, &Col123, NULL, NULL, NULL, &lEaseOnHalf},
-//  //{2000,4000, &Col123, NULL, NULL, NULL, &lEaseOffHalf},
-//  //{500,2500,&Col456, &lEaseOnHalf, NULL, NULL, NULL},
-//  //{2500,4500,&Col456, &lEaseOffHalf, NULL, NULL, NULL},
-//  //{1000,3000,&Col78, NULL, &lEaseOnHalf, NULL, NULL},
-//  //{3000,5000,&Col78, NULL, &lEaseOffHalf, NULL, NULL},
-//  //{1500,3500,&Col910, NULL, NULL, &lEaseOnHalf, NULL},
-//  //{3500,5500,&Col910, NULL, NULL, &lEaseOffHalf, NULL},
-//  //{0,9000,&Row12, NULL, &lEaseOnHalf, &lEaseOnHalf, NULL},
-//  //{1500,9000,&Row34, &lEaseOnHalf, NULL, &lEaseOnHalf, NULL},
-//  //{3000,9000,&Row56, &lEaseOnHalf, &lEaseOnHalf, NULL, NULL},
-//};
-//StripStateStep Test2[] = {
-//	//{ 0, -1, &runner, NULL, NULL, NULL, &lEaseOnHalf },
-//	{ 0, -1, &runner2, NULL, NULL, &lEaseOnHalf, NULL },
-//	//{ 0, -1, &WipeUp, &EaseInOut, NULL, NULL, NULL },
-//	//{ 0, -1, &WipeOver, NULL, &EaseInOut, NULL, NULL }
-//	//{0,-1,new BlockSelector(0,0,0,0), NULL, NULL, NULL, &lEaseOnHalf}
-//	//{0,2000, &Col123, NULL, NULL, NULL, &lEaseOnHalf},
-//	//{2000,4000, &Col123, NULL, NULL, NULL, &lEaseOffHalf},
-//	//{500,2500,&Col456, &lEaseOnHalf, NULL, NULL, NULL},
-//	//{2500,4500,&Col456, &lEaseOffHalf, NULL, NULL, NULL},
-//	//{1000,3000,&Col78, NULL, &lEaseOnHalf, NULL, NULL},
-//	//{3000,5000,&Col78, NULL, &lEaseOffHalf, NULL, NULL},
-//	//{1500,3500,&Col910, NULL, NULL, &lEaseOnHalf, NULL},
-//	//{3500,5500,&Col910, NULL, NULL, &lEaseOffHalf, NULL},
-//	//{0,9000,&Row12, NULL, &lEaseOnHalf, &lEaseOnHalf, NULL},
-//	//{1500,9000,&Row34, &lEaseOnHalf, NULL, &lEaseOnHalf, NULL},
-//	//{3000,9000,&Row56, &lEaseOnHalf, &lEaseOnHalf, NULL, NULL},
-//};
-
-//BlockSelector Col123 = BlockSelector(0,5,0,2);
-//BlockSelector Col456 = BlockSelector(0,5,3,5);
-//BlockSelector Col78 = BlockSelector(0,5,6,7);
-//BlockSelector Col910 = BlockSelector(0,5,8,9);
-//BlockSelector Row12 = BlockSelector(0,1,0,9);
-//BlockSelector Row34 = BlockSelector(2,3,0,9);
-//BlockSelector Row56 = BlockSelector(4,5,0,9);
-//
-//LinearEase WipeUpEase = LinearEase(0, 1000, 4, false);
-//RowWipeSelector WipeUp = RowWipeSelector(0, 5, 0, 9, &WipeUpEase);
-//
-//LinearEase WipeOverEase = LinearEase(0, 1000, 9, false);
-//ColWipeSelector WipeOver = ColWipeSelector(0, 5, 0, 9, &WipeOverEase);
-//
-//RowRunnerSelector runner = RowRunnerSelector(0, 5, 0, 9, 1000, 2, 7, true);
-//ColRunnerSelector runner2 = ColRunnerSelector(0, 5, 0, 9, 1000, 2, 5, true);
-//
-//SineEase EaseOn = SineEase(0,255,2000, false);
-
-//SineEase lEaseOff = SineEase(255,0,1000, false);
-//LinearEase lEaseOnHalf = LinearEase(0,75,1000, false);
-//LinearEase lEaseOffHalf = LinearEase(75,0,1000, false);
-//
-//SineEase EaseInOut = SineEase(10, 75, 1000, true);
-//LinearEase LinearEaseInOut = LinearEase(0, 255, 1000, true);
 
 
 void setup(){
