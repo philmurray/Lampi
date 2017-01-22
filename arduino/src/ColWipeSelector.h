@@ -8,8 +8,8 @@
 class ColWipeSelector : public RowWipeSelector
 {
 public:
-	ColWipeSelector(int minR, int maxR, int minC, int maxC, Ease* e)
-		: RowWipeSelector(minR, maxR, minC, maxC, e) {}
+	ColWipeSelector(int minR, int maxR, int minC, int maxC, Ease* e, bool r)
+		: RowWipeSelector(minR, maxR, minC, maxC, e, r) {}
 protected:
 	virtual int getDimensionDifference();
 };

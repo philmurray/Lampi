@@ -14,10 +14,14 @@ unsigned long RowWipeSelector::getPinTime(unsigned long currentTime, int pin)
   unsigned long t = BlockSelector::getPinTime(currentTime, pin);
   if (t != long(-1))
   {
-	  if (Reverse) {
-			//Do something clever
+	  if (Reverse)
+	  {
+		  t = (ease->MaxVal - ease->Calc(getDimensionDifference())) - t;
 	  }
-	  t = t - ease->Calc(getDimensionDifference());
+	  else
+	  {
+		  t = t - ease->Calc(getDimensionDifference());
+	  }
   }
   return t;
 }
