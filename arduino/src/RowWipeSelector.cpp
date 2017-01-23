@@ -2,10 +2,11 @@
 #include "RowWipeSelector.h"
 #include "BlockSelector.h"
 
-RowWipeSelector::RowWipeSelector(byte minR, byte maxR, byte minC, byte maxC, unsigned long duration, bool forwards, bool r)
+RowWipeSelector::RowWipeSelector(byte minR, byte maxR, byte minC, byte maxC, unsigned long duration, bool forwards, bool r, unsigned long rp)
  : BlockSelector(minR, maxR, minC, maxC)
 {
   Reverse = r;
+  ReversePadding = rp;
   Forwards = forwards;
   Duration = duration;
 }
@@ -17,7 +18,7 @@ unsigned long RowWipeSelector::getPinTime(unsigned long currentTime, byte pin)
   {
 	  if (Reverse)
 	  {
-		  t = (Duration - getTimeOffset()) - t;
+		  t = ((Duration + ReversePadding) - getTimeOffset()) - t;
 	  }
 	  else
 	  {

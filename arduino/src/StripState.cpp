@@ -72,6 +72,7 @@ void StripState::reset(StripState * t)
 
 void StripState::getPinColor(byte pin, int * red, int * green, int * blue, int * white)
 {
+
 	for (byte s = 0; s < StepsLength; s++)
 	{
 		unsigned long st = timeElapsed;
@@ -79,7 +80,6 @@ void StripState::getPinColor(byte pin, int * red, int * green, int * blue, int *
 		if (step.StartTime <= st && step.Duration > st - step.StartTime)
 		{
 			st = st - step.StartTime;
-			//Serial.println(String(timeElapsed) + " " + String(step.StartTime) + " " + String(st) + " " +  String(step.EndTime));
 
 
 			//Serial.println("pin: " + String(pin));  

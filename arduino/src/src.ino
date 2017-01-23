@@ -83,13 +83,13 @@ StripStateStep State_1_steps[] = {
 };
 StripState State_1 = StripState(&strip, State_1_steps, sizeof(State_1_steps) / sizeof(On[0]));
 
-LinearEase s2e3 = LinearEase(0, 255, 2000, false);
-LinearEase s2e4 = LinearEase(0, 120, 2000, false);
-RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 2000, true, false);
-RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, 2000, true, true);
+LinearEase s2e3 = LinearEase(0, 255, 1000, false);
+LinearEase s2e4 = LinearEase(0, 120, 1000, false);
+RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 2000, true, false, 0);
+RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, 2000, true, true, 1000);
 StripStateStep State_2_steps[] = {
-	{ 0,4000,&s2s1, &s2e4, 0,&s2e3,0 },
-	{ 4000,4000,&s2s2, &s2e4, 0, &s2e3, 0 }
+	{ 0,3000,&s2s1, &s2e4, 0,&s2e3,0 },
+	{ 3000,6000,&s2s2, &s2e4, 0, &s2e3, 0 }
 };
 StripState State_2 = StripState(&strip, State_2_steps, sizeof(State_2_steps) / sizeof(On[0]));
 
@@ -97,9 +97,9 @@ SineEase s3e1 = SineEase(0, 255, 750, false);
 SineEase s3e2 = SineEase(0, 120, 750, false);
 SineEase s3e3 = SineEase(0, 0, 750, false);
 SineEase s3e4 = SineEase(0, 50, 750, false);
-RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 4, 2000, true, false);
-ColWipeSelector s3s2 = ColWipeSelector(0, 5, 0, 4, 2000, false, false);
-ColWipeSelector s3s3 = ColWipeSelector(0, 5, 4, 9, 2000, true, false);
+RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 4, 2000, true, false, 0);
+ColWipeSelector s3s2 = ColWipeSelector(0, 5, 0, 4, 2000, false, false, 0);
+ColWipeSelector s3s3 = ColWipeSelector(0, 5, 4, 9, 2000, true, false, 0);
 StripStateStep State_3_steps[] = {
 	{ 0,-1,&s3s1, &s3e2, &s3e3, &s3e4,0 },
 	{ 2000,-1,&s3s2, &s3e1, 0,0,0 },
@@ -114,7 +114,7 @@ RowRunnerSelector s4s2 = RowRunnerSelector(0, 5, 3, 3, 100, 1, 13, true);
 RowRunnerSelector s4s3 = RowRunnerSelector(0, 5, 4, 4, 100, 1, 19, true);
 RowRunnerSelector s4s4 = RowRunnerSelector(0, 5, 1, 1, 100, 1, 11, true);
 RowRunnerSelector s4s5 = RowRunnerSelector(0, 5, 7, 7, 100, 1, 17, true);
-RowWipeSelector s4s6 = RowWipeSelector(0, 5, 0, 9, 4000, true, false);
+RowWipeSelector s4s6 = RowWipeSelector(0, 5, 0, 9, 4000, true, false, 0);
 StripStateStep State_4_steps[] = {
 	{ 0,5000,&s4s1, 0, &OnNow, 0 ,0 },
 	{ 0,5000,&s4s2, 0, &OnNow, 0 ,0 },
