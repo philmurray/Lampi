@@ -5,6 +5,6 @@ PinState::PinState()
 {
 }
 
-void PinState::update(int pin)
+void PinState::update(byte pin)
 {
 }

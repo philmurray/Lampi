@@ -1,6 +1,6 @@
 #include "ColRunnerSelector.h"
 
-int ColRunnerSelector::getDimension()
+byte ColRunnerSelector::getDimension()
 {
 	return currentCol;
 }

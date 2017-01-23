@@ -7,7 +7,7 @@ class PinState
 {
   public:
     PinState();
-    virtual void update (int pin);
+    virtual void update (byte pin);
 };
 
 #endif

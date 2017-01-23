@@ -34,13 +34,14 @@
 
 #define NUM_PINS 7
 #define STRIP_STATE 7
+#define NO_SELECTION 254
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_PINS, NEOPIXEL_PIN, NEO_RGBW + NEO_KHZ800);
 char serial_char = 0;
 bool starting_up = true;
-int selectedPin = -1;
+byte selectedPin = NO_SELECTION;
 
-int pins[] = {BOT_1_PIN, BOT_2_PIN, BOT_3_PIN, BOT_4_PIN, TOP_1_PIN, TOP_2_PIN, TOP_3_PIN};
+byte pins[] = {BOT_1_PIN, BOT_2_PIN, BOT_3_PIN, BOT_4_PIN, TOP_1_PIN, TOP_2_PIN, TOP_3_PIN};
 PinState* pinStates[7];
 
 OnOffPinState OnPin = OnOffPinState(true);
@@ -128,7 +129,7 @@ StripState State_4 = StripState(&strip, State_4_steps, sizeof(State_4_steps) / s
 
 void setup(){
   Serial.begin(9600);
-  for (int i = 0; i < NUM_PINS; i++)
+  for (byte i = 0; i < NUM_PINS; i++)
   {
     pinMode(pins[i], OUTPUT);
   }
@@ -143,14 +144,14 @@ void loop(){
   {
     if (Serial.available()) {
       serial_char = Serial.read();
-      if (selectedPin == -1) {
+      if (selectedPin == NO_SELECTION) {
         selectThing(serial_char);
       } else {
         selectMode(serial_char);
       }
     }
 
-    for (int i = 0; i < NUM_PINS; i++)
+    for (byte i = 0; i < NUM_PINS; i++)
     {
         PinState* s = pinStates[i];
         if (s != NULL)
@@ -177,7 +178,7 @@ void startup() {
   starting_up = false;
 }
 
-void blink(int pin)
+void blink(byte pin)
 {
   digitalWrite(pin, HIGH);
   delay(100);
@@ -191,7 +192,7 @@ void selectMode(char mode) {
     selectStripMode(mode);
   }
 
-  selectedPin = -1;
+  selectedPin = NO_SELECTION;
 }
 
 void selectThing(char thing) {

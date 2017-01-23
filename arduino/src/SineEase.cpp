@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "SineEase.h"
 
-unsigned long SineEase::Calc(unsigned long currentTime)
+int SineEase::Calc(unsigned long currentTime)
 {
 	unsigned long t = adjustedTime(currentTime);
 

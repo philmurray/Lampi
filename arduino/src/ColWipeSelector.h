@@ -8,7 +8,7 @@
 class ColWipeSelector : public RowWipeSelector
 {
 public:
-	ColWipeSelector(int minR, int maxR, int minC, int maxC, unsigned long duration, bool forwards, bool r)
+	ColWipeSelector(byte minR, byte maxR, byte minC, byte maxC, unsigned long duration, bool forwards, bool r)
 		: RowWipeSelector(minR, maxR, minC, maxC, duration, forwards, r) {}
 protected:
 	virtual unsigned long getTimeOffset();

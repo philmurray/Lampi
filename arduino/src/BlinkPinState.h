@@ -8,7 +8,7 @@ class BlinkPinState : public PinState
 {
   public:
     BlinkPinState(unsigned long ra, unsigned long ot);
-    virtual void update(int pin);
+    virtual void update(byte pin);
   protected:
     unsigned long repeatAfter;
     unsigned long onTime;

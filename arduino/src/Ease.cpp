@@ -15,7 +15,7 @@ Ease::Ease(int min, int max, unsigned long duration, bool repeat)
   }
 }
 
-unsigned long Ease::Calc(unsigned long currentTime)
+int Ease::Calc(unsigned long currentTime)
 {
   return MaxVal;
 }

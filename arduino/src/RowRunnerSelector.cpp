@@ -2,7 +2,7 @@
 #include "RowRunnerSelector.h"
 #include "BlockSelector.h"
 
-RowRunnerSelector::RowRunnerSelector(int minR, int maxR, int minC, int maxC, unsigned long s, int l, int r, bool rev)
+RowRunnerSelector::RowRunnerSelector(byte minR, byte maxR, byte minC, byte maxC, unsigned long s, byte l, byte r, bool rev)
 	: BlockSelector(minR, maxR, minC, maxC)
 {
 	Speed = s;
@@ -14,7 +14,7 @@ RowRunnerSelector::RowRunnerSelector(int minR, int maxR, int minC, int maxC, uns
 	OnMidpoint = (Speed * Length) / 2;
 }
 
-unsigned long RowRunnerSelector::getPinTime(unsigned long currentTime, int pin)
+unsigned long RowRunnerSelector::getPinTime(unsigned long currentTime, byte pin)
 {
 	unsigned long t = BlockSelector::getPinTime(currentTime, pin);
 	if (t != long(-1))
@@ -24,10 +24,10 @@ unsigned long RowRunnerSelector::getPinTime(unsigned long currentTime, int pin)
 		{
 		  t = TotalDuration - t;
 		}
-		int maxR = t / Speed;
-		int minR = ((maxR - Length) + 1 + Repeat) % Repeat;
+		byte maxR = t / Speed;
+		byte minR = ((maxR - Length) + 1 + Repeat) % Repeat;
 
-		int r = getDimension() % Repeat;
+		byte r = getDimension() % Repeat;
 		if ((minR <= maxR && r >= minR && r <= maxR) || (minR > maxR && (r <= maxR || r >= minR)))
 		{
 			t = (t + TotalDuration - (r * Speed)) % TotalDuration;
@@ -44,7 +44,7 @@ unsigned long RowRunnerSelector::getPinTime(unsigned long currentTime, int pin)
 	return t;
 }
 
-int RowRunnerSelector::getDimension()
+byte RowRunnerSelector::getDimension()
 {
 	return currentRow;
 }

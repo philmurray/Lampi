@@ -10,18 +10,18 @@
 class BlockSelector : public Selector
 {
   public:
-    BlockSelector(int minR, int maxR, int minC, int maxC);
-    virtual unsigned long getPinTime(unsigned long currentTime, int pin);
+    BlockSelector(byte minR, byte maxR, byte minC, byte maxC);
+    virtual unsigned long getPinTime(unsigned long currentTime, byte pin);
   protected:
-    int Row(int pin);
-    int Col(int pin);
-    int minRow;
-    int maxRow;
-    int minCol;
-    int maxCol;
+	  byte Row(byte pin);
+	  byte Col(byte pin);
+	  byte minRow;
+	  byte maxRow;
+	  byte minCol;
+	  byte maxCol;
 
-    int currentRow;
-    int currentCol;
+	  byte currentRow;
+	  byte currentCol;
 };
 
 #endif

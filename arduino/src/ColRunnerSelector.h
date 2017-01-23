@@ -8,10 +8,10 @@
 class ColRunnerSelector : public RowRunnerSelector
 {
 public:
-	ColRunnerSelector(int minR, int maxR, int minC, int maxC, unsigned long s, int l, int r, bool rev)
+	ColRunnerSelector(byte minR, byte maxR, byte minC, byte maxC, unsigned long s, byte l, byte r, bool rev)
 		: RowRunnerSelector(minR, maxR, minC, maxC, s, l, r, rev) {}
 protected:
-	virtual int getDimension();
+	virtual byte getDimension();
 };
 
 #endif

@@ -27,7 +27,7 @@ public:
 			type = SINE_IN;
 		}
 	}
-	virtual unsigned long Calc(unsigned long currentTime);
+	virtual int Calc(unsigned long currentTime);
 protected:
 	byte type;
 };

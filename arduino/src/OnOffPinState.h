@@ -8,7 +8,7 @@ class OnOffPinState : public PinState
 {
   public:
     OnOffPinState(bool o);
-    virtual void update (int pin);
+    virtual void update (byte pin);
   protected:
     bool on;
 };

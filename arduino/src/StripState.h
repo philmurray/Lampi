@@ -14,7 +14,7 @@ class StripState
 		void update ();
 		void reset(StripState* t);
 	protected:
-		void getPinColor(int p, int* r, int* g, int* b, int* w);
+		void getPinColor(byte p, int* r, int* g, int* b, int* w);
 		void updateTime();
 		StripState* Transition;
 		Adafruit_NeoPixel* strip;

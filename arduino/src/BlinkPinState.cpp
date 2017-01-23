@@ -9,7 +9,7 @@ BlinkPinState::BlinkPinState(unsigned long ra, unsigned long ot)
   onTime = ot;
 }
 
-void BlinkPinState::update(int pin)
+void BlinkPinState::update(byte pin)
 {
   PinState::update(pin);
   unsigned long t = millis() % repeatAfter;

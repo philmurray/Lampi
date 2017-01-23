@@ -7,7 +7,7 @@ class Ease
 {
   public:
     Ease(int min, int max, unsigned long duration, bool repeat);
-    virtual unsigned long Calc(unsigned long currentTime);
+    virtual int Calc(unsigned long currentTime);
     unsigned long Duration;
     int MinVal;
     int MaxVal;

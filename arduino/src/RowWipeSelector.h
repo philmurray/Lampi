@@ -8,8 +8,8 @@
 class RowWipeSelector : public BlockSelector
 {
   public:
-    RowWipeSelector(int minR, int maxR, int minC, int maxC, unsigned long duration, bool forwards, bool r);
-    virtual unsigned long getPinTime(unsigned long currentTime, int pin);
+    RowWipeSelector(byte minR, byte maxR, byte minC, byte maxC, unsigned long duration, bool forwards, bool r);
+    virtual unsigned long getPinTime(unsigned long currentTime, byte pin);
   protected:
 	bool Reverse;
 	bool Forwards;

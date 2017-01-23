@@ -7,7 +7,7 @@ class Selector
 {
   public:
     Selector();
-    virtual unsigned long getPinTime(unsigned long currentTime, int pin);
+    virtual unsigned long getPinTime(unsigned long currentTime, byte pin);
 };
 
 #endif

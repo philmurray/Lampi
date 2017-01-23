@@ -8,7 +8,7 @@ OnOffPinState::OnOffPinState(bool b)
   on = b;
 }
 
-void OnOffPinState::update(int pin)
+void OnOffPinState::update(byte pin)
 {
   PinState::update(pin);
   if (on) {

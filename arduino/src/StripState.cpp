@@ -25,7 +25,7 @@ void StripState::update()
 	  Transition->updateTime();
   }
 
-  for (int pin = 0; pin < STRIP_PINS; pin++)
+  for (byte pin = 0; pin < STRIP_PINS; pin++)
   {
     int red = 0;
     int green = 0;
@@ -63,9 +63,9 @@ void StripState::reset(StripState * t)
 	startTime = millis();
 }
 
-void StripState::getPinColor(int pin, int * red, int * green, int * blue, int * white)
+void StripState::getPinColor(byte pin, int * red, int * green, int * blue, int * white)
 {
-	for (int s = 0; s < StepsLength; s++)
+	for (byte s = 0; s < StepsLength; s++)
 	{
 		unsigned long st = timeElapsed;
 		StripStateStep step = Steps[s];

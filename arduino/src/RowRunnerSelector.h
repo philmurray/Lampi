@@ -8,17 +8,17 @@
 class RowRunnerSelector : public BlockSelector
 {
 public:
-	RowRunnerSelector(int minR, int maxR, int minC, int maxC, unsigned long s, int l, int r, bool rev);
-	virtual unsigned long getPinTime(unsigned long currentTime, int pin);
+	RowRunnerSelector(byte minR, byte maxR, byte minC, byte maxC, unsigned long s, byte l, byte r, bool rev);
+	virtual unsigned long getPinTime(unsigned long currentTime, byte pin);
 protected:
 	unsigned long Speed;
-	int Length;
-	int Repeat;
+	byte Length;
+	byte Repeat;
 	bool Reversed;
 	unsigned long TotalDuration;
 	unsigned long OnMidpoint;
 
-	virtual int getDimension();
+	virtual byte getDimension();
 };
 
 #endif
