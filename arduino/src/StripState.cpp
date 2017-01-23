@@ -18,7 +18,7 @@ void StripState::update()
 	updateTime();
   //Serial.println("updating stripState" + String(timeElapsed));
 
-  float percent = float(timeElapsed) / TRANSITION_LENGTH;
+	float percent = transitionProgress();
   float oldPercent = 1.0f - percent;
 
   if (Transition != NULL && percent < 1.0f) {
@@ -58,7 +58,14 @@ void StripState::update()
 
 void StripState::reset(StripState * t)
 {
-	Transition = t;
+	if (t->Transition != NULL && t->transitionProgress() < 0.5f)
+	{
+		Transition = t->Transition;
+	}
+	else
+	{
+		Transition = t;
+	}
 	timeElapsed = 0;
 	startTime = millis();
 }
@@ -113,6 +120,11 @@ void StripState::getPinColor(byte pin, int * red, int * green, int * blue, int *
 void StripState::updateTime()
 {
 	timeElapsed = millis() - startTime;
+}
+
+float StripState::transitionProgress()
+{
+	return float(timeElapsed) / TRANSITION_LENGTH;
 }
 
 

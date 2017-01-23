@@ -14,15 +14,16 @@ class StripState
 		void update ();
 		void reset(StripState* t);
 	protected:
+		StripState* Transition;
 		void getPinColor(byte p, int* r, int* g, int* b, int* w);
 		void updateTime();
-		StripState* Transition;
+		float transitionProgress();
 		Adafruit_NeoPixel* strip;
 		StripStateStep* Steps;
 		byte StepsLength;
 	private:
-		unsigned long startTime;
 		unsigned long timeElapsed;
+		unsigned long startTime;
 };
 
 #endif

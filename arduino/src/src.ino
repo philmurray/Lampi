@@ -73,7 +73,7 @@ StripStateStep Up[] = {
 };
 StripState UpState = StripState(&strip, Up, sizeof(Up) / sizeof(On[0]));
 
-Ease s1e1 = Ease(0, 20, 0, false);
+Ease s1e1 = Ease(0, 10, 0, false);
 SineEase s1e2 = SineEase(0, 255, 250, true);
 StripStateStep State_1_steps[] = {
 	{ 0, -1, &AllSelector, 0, 0, &s1e1, &s1e1 },
@@ -84,7 +84,7 @@ StripStateStep State_1_steps[] = {
 StripState State_1 = StripState(&strip, State_1_steps, sizeof(State_1_steps) / sizeof(On[0]));
 
 LinearEase s2e3 = LinearEase(0, 255, 2500, false);
-LinearEase s2e4 = LinearEase(0, 100, 2500, false);
+LinearEase s2e4 = LinearEase(0, 120, 2500, false);
 RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 3000, true, false);
 RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, 3000, true, true);
 StripStateStep State_2_steps[] = {
