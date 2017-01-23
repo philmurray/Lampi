@@ -83,13 +83,13 @@ StripStateStep State_1_steps[] = {
 };
 StripState State_1 = StripState(&strip, State_1_steps, sizeof(State_1_steps) / sizeof(On[0]));
 
-LinearEase s2e3 = LinearEase(0, 255, 2500, false);
-LinearEase s2e4 = LinearEase(0, 120, 2500, false);
-RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 3000, true, false);
-RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, 3000, true, true);
+LinearEase s2e3 = LinearEase(0, 255, 2000, false);
+LinearEase s2e4 = LinearEase(0, 120, 2000, false);
+RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 2000, true, false);
+RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, 2000, true, true);
 StripStateStep State_2_steps[] = {
 	{ 0,4000,&s2s1, &s2e4, 0,&s2e3,0 },
-	{ 4000,3000,&s2s2, &s2e4, 0, &s2e3, 0 }
+	{ 4000,4000,&s2s2, &s2e4, 0, &s2e3, 0 }
 };
 StripState State_2 = StripState(&strip, State_2_steps, sizeof(State_2_steps) / sizeof(On[0]));
 
@@ -124,6 +124,14 @@ StripStateStep State_4_steps[] = {
 	{ 1000,-1,&s4s6, 0, &s4e1, 0 ,&s4e2 },
 };
 StripState State_4 = StripState(&strip, State_4_steps, sizeof(State_4_steps) / sizeof(On[0]));
+
+StripStateStep State_5_steps[] = {
+	{ 0,5000,&s2s1, 0, 0,&s2e3,0 },
+	{ 1000,3000,&s2s1, &s2e4, 0,0,0 },
+	{ 4000,3000,&s2s2, &s2e4, 0,0,0 },
+	{ 5000,3000,&s2s2, 0, 0, &s2e3, 0 }
+};
+StripState State_5 = StripState(&strip, State_5_steps, sizeof(State_5_steps) / sizeof(On[0]));
 
 
 
@@ -260,6 +268,8 @@ void selectStripMode(char mode) {
 
       break;
 	case '5':
+		Serial.println("Entering 5 State");
+		stripState = &State_5;
 
 		break;
 	case '6':
