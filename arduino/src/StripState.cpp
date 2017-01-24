@@ -6,77 +6,82 @@
 #define STRIP_PINS 60
 #define REALLY_BIG 4000000000
 
-StripState::StripState(Adafruit_NeoPixel* str, struct StripStateStep steps[], byte len)
+StripState::StripState(Adafruit_NeoPixel* str)
 {
-    strip = str;
-    StepsLength = len;
-    Steps = steps;
+	strip = str;
 }
 
 void StripState::update()
 {
 	updateTime();
-  //Serial.println("updating stripState" + String(timeElapsed));
-
+	//Serial.println("updating stripState" + String(timeElapsed));
 	float percent = transitionProgress();
-  float oldPercent = 1.0f - percent;
+	float oldPercent = 1.0f - percent;
+	unsigned long transitionElapsed;
 
-  if (Transition != NULL && percent < 1.0f) {
-	  Transition->updateTime();
-  }
-
-  for (byte pin = 0; pin < STRIP_PINS; pin++)
-  {
-    int red = 0;
-    int green = 0;
-    int blue = 0;
-    int white = 0;
-
-	getPinColor(pin, &red, &green, &blue, &white);
-
-	if (percent < 1.0f )
-	{
-		int oldRed = 0;
-		int oldGreen = 0;
-		int oldBlue = 0;
-		int oldWhite = 0;
-
-		if (Transition != NULL)
-		{
-			Transition->getPinColor(pin, &oldRed, &oldGreen, &oldBlue, &oldWhite);
-		}
-		red = red*percent + oldRed*oldPercent;
-		green = green*percent + oldGreen*oldPercent;
-		blue = blue*percent + oldBlue*oldPercent;
-		white = white*percent + oldWhite*oldPercent;
-	}
-    
-    strip->setPixelColor(pin, strip->Color(constrain(red, 0, 255), constrain(green, 0, 255), constrain(blue, 0, 255), constrain(white, 0, 255)));
-  }
-  strip->show();
-}
-
-void StripState::reset(StripState * t)
-{
-	if (t->Transition != NULL && t->transitionProgress() < 0.5f)
-	{
-		Transition = t->Transition;
+	if (TransitionSteps != NULL && percent < 1.0f) {
+		transitionElapsed = millis() - transitionStartTime;
 	}
 	else
 	{
-		Transition = t;
+		TransitionSteps = NULL;
 	}
+
+	for (byte pin = 0; pin < STRIP_PINS; pin++)
+	{
+		int red = 0;
+		int green = 0;
+		int blue = 0;
+		int white = 0;
+
+		getPinColor(pin, Steps, StepsLength, timeElapsed, &red, &green, &blue, &white);
+
+		if (percent < 1.0f)
+		{
+			int oldRed = 0;
+			int oldGreen = 0;
+			int oldBlue = 0;
+			int oldWhite = 0;
+
+			if (TransitionSteps != NULL)
+			{
+				getPinColor(pin, TransitionSteps, TransitionStepsLength, transitionElapsed, &oldRed, &oldGreen, &oldBlue, &oldWhite);
+			}
+			red = red*percent + oldRed*oldPercent;
+			green = green*percent + oldGreen*oldPercent;
+			blue = blue*percent + oldBlue*oldPercent;
+			white = white*percent + oldWhite*oldPercent;
+		}
+
+		strip->setPixelColor(pin, strip->Color(constrain(red, 0, 255), constrain(green, 0, 255), constrain(blue, 0, 255), constrain(white, 0, 255)));
+	}
+	strip->show();
+}
+
+void StripState::reset(struct StripStateStep steps[], byte len, float transitionLength)
+{
+	if (transitionLength > 0.0f && transitionProgress() > 0.5f)
+	{
+		TransitionSteps = Steps;
+		TransitionStepsLength = StepsLength;
+		transitionStartTime = startTime;
+	}
+	Steps = steps;
+	StepsLength = len;
+
+	TransitionLength = transitionLength;
+
 	timeElapsed = 0;
 	startTime = millis();
 }
 
-void StripState::getPinColor(byte pin, int * red, int * green, int * blue, int * white)
+void StripState::getPinColor(byte pin, struct StripStateStep steps[], byte stepsLength, unsigned long timeEl, int * red, int * green, int * blue, int * white)
 {
 
-	for (byte s = 0; s < StepsLength; s++)
+	for (byte s = 0; s < stepsLength; s++)
 	{
-		unsigned long st = timeElapsed;
-		StripStateStep step = Steps[s];
+		unsigned long st = timeEl;
+		StripStateStep step = steps[s];
 		if (step.StartTime <= st && step.Duration > st - step.StartTime)
 		{
 			st = st - step.StartTime;
@@ -124,7 +129,14 @@ void StripState::updateTime()
 
 float StripState::transitionProgress()
 {
-	return float(timeElapsed) / TRANSITION_LENGTH;
+	if (TransitionLength > 0.0f)
+	{
+		return float(timeElapsed) / TransitionLength;
+	}
+	else
+	{
+		return 1.0f;
+	}
 }
 
 
