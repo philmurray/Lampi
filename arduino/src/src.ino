@@ -55,11 +55,16 @@ StripState stripState = StripState(&strip);
 Selector AllSelector = Selector();
 
 Ease OnNow = Ease(0, 255, 0, false);
+Ease OffNow = Ease(0, 0, 0, false);
+Ease SubtractNow = Ease(-255, -255, 0, false);
+SineEase OnMediumEase = SineEase(0, 255, 750, false);
+SineEase OffMediumEase = SineEase(0, 0, 750, false);
+
+
 StripStateStep On[] = {
   {0,-1,&AllSelector, 0, 0, 0, &OnNow}
 };
 
-Ease OffNow = Ease(0, 0, 0, false);
 StripStateStep Off[] = {
   {0,-1,&AllSelector, 0, 0, 0, &OffNow }
 };
@@ -88,17 +93,15 @@ StripStateStep State_2_steps[] = {
 	{ 3000,6000,&s2s2, &s2e4, 0, &s2e3, 0 }
 };
 
-SineEase s3e1 = SineEase(0, 255, 750, false);
 SineEase s3e2 = SineEase(0, 120, 750, false);
-SineEase s3e3 = SineEase(0, 0, 750, false);
 SineEase s3e4 = SineEase(0, 50, 750, false);
 RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 4, 2000, true, false, 0);
 ColWipeSelector s3s2 = ColWipeSelector(0, 5, 0, 4, 2000, false, false, 0);
 ColWipeSelector s3s3 = ColWipeSelector(0, 5, 4, 9, 2000, true, false, 0);
 StripStateStep State_3_steps[] = {
-	{ 0,-1,&s3s1, &s3e2, &s3e3, &s3e4,0 },
-	{ 2000,-1,&s3s2, &s3e1, 0,0,0 },
-	{ 2000,-1,&s3s3, &s3e1, 0,0,0 }
+	{ 0,-1,&s3s1, &s3e2, &OffMediumEase, &s3e4,0 },
+	{ 2000,-1,&s3s2, &OnMediumEase, 0,0,0 },
+	{ 2000,-1,&s3s3, &OnMediumEase, 0,0,0 }
 };
 
 LinearEase s4e1 = LinearEase(0, 200, 4000, false);
@@ -125,6 +128,44 @@ StripStateStep State_5_steps[] = {
 	{ 5000,3000,&s2s2, 0, 0, &s2e3, 0 }
 };
 
+ColRunnerSelector s6s1 = ColRunnerSelector(0, 1, 0, 9, 250, 2, 5, false);
+ColRunnerSelector s6s2 = ColRunnerSelector(2, 3, 0, 9, 250, 2, 5, true);
+ColRunnerSelector s6s3 = ColRunnerSelector(4, 5, 0, 9, 250, 2, 5, false);
+StripStateStep State_6_steps[] = {
+	{ 0, -1, &AllSelector, 0,0,&OnNow, 0},
+	{ 0, -1, &s6s1, &OnNow, 0,&SubtractNow,0 },
+	{ 0, -1, &s6s2, &OnNow, 0,&SubtractNow,0 },
+	{ 0, -1, &s6s3, &OnNow, 0,&SubtractNow,0 }
+};
+
+RowWipeSelector s7s1 = RowWipeSelector(0,5,0,2,2500,true,false,0);
+RowWipeSelector s7s2 = RowWipeSelector(0, 5, 7, 9, 2500, false, false, 0);
+ColWipeSelector s7s3 = ColWipeSelector(0, 5, 2, 9, 5000, true, false, 0);
+ColWipeSelector s7s4 = ColWipeSelector(0, 5, 0, 7, 5000, false, false, 0);
+StripStateStep State_7_steps[] = {
+	{ 0, -1, &s7s1, 0,&OnMediumEase,0, 0 },
+	{ 0, -1, &s7s2, 0, 0, &OnMediumEase, 0 },
+	{ 2500, -1, &s7s3, 0,&OnMediumEase,0, 0 },
+	{ 2500, -1, &s7s4, 0, 0, &OnMediumEase, 0 }
+};
+
+ColRunnerSelector s8s1 = ColRunnerSelector(0, 5, 0, 9, 150, 5, 10, false);
+StripStateStep State_8_steps[] = {
+	{ 0, -1, &AllSelector, &s2e4,0,0, 0 },
+	{ 0, -1, &s8s1, 0,0,&OnMediumEase , 0 }
+};
+
+
+RowWipeSelector s9s1 = RowWipeSelector(4, 5, 0, 9, 2000, false, false, 0);
+StripStateStep State_9_steps[] = {
+	{ 0,-1,&s4s1, 0, &OnNow, 0 ,0 },
+	{ 0,-1,&s4s2, 0, &OnNow, 0 ,0 },
+	{ 0,-1,&s4s3, 0, &OnNow, 0 ,0 },
+	{ 0,-1,&s4s4, 0, &OnNow, 0 ,0 },
+	{ 0,-1,&s4s5, 0, &OnNow, 0 ,0 },
+	{ 1000,-1,&s3s1, &OnMediumEase, 0, 0,0 },
+	{ 3000,-1,&s9s1, &OnMediumEase, 0, 0,0 }
+};
 
 
 void setup() {
@@ -226,52 +267,60 @@ void selectThing(char thing) {
 void selectStripMode(char mode) {
 	switch (mode) {
 	case 'f':
-		Serial.println("Entering Off State");
+		Serial.println(F("Entering Off State"));
 		stripState.reset(Off, sizeof(Off) / sizeof(On[0]), 1200);
 		break;
 	case 'n':
-		Serial.println("Entering On State");
+		Serial.println(F("Entering On State"));
 		stripState.reset(On, sizeof(On) / sizeof(On[0]), 1200);
 		break;
 	case 'u':
-		Serial.println("Entering Up State");
+		Serial.println(F("Entering Up State"));
 		stripState.reset(Up, sizeof(Up) / sizeof(On[0]), 0.0f);
 		break;
 	case '1':
-		Serial.println("Entering 1 State");
-		stripState.reset(State_1_steps, sizeof(State_1_steps) / sizeof(On[0]), 750);
+		Serial.println(F("Entering 1 State"));
+		stripState.reset(State_1_steps, sizeof(State_1_steps) / sizeof(On[0]), 250);
 
 		break;
 	case '2':
-		Serial.println("Entering 2 State");
-		stripState.reset(State_2_steps, sizeof(State_2_steps) / sizeof(On[0]), 750);
+		Serial.println(F("Entering 2 State"));
+		stripState.reset(State_2_steps, sizeof(State_2_steps) / sizeof(On[0]), 250);
 
 		break;
 	case '3':
-		Serial.println("Entering 3 State");
-		stripState.reset(State_3_steps, sizeof(State_3_steps) / sizeof(On[0]), 750);
+		Serial.println(F("Entering 3 State"));
+		stripState.reset(State_3_steps, sizeof(State_3_steps) / sizeof(On[0]), 250);
 
 		break;
 	case '4':
-		Serial.println("Entering 4 State");
-		stripState.reset(State_4_steps, sizeof(State_4_steps) / sizeof(On[0]), 750);
+		Serial.println(F("Entering 4 State"));
+		stripState.reset(State_4_steps, sizeof(State_4_steps) / sizeof(On[0]), 250);
 
 		break;
 	case '5':
-		Serial.println("Entering 5 State");
-		stripState.reset(State_5_steps, sizeof(State_5_steps) / sizeof(On[0]), 750);
+		Serial.println(F("Entering 5 State"));
+		stripState.reset(State_5_steps, sizeof(State_5_steps) / sizeof(On[0]), 250);
 
 		break;
 	case '6':
+		Serial.println(F("Entering 6 State"));
+		stripState.reset(State_6_steps, sizeof(State_6_steps) / sizeof(On[0]), 250);
 
 		break;
 	case '7':
+		Serial.println(F("Entering 7 State"));
+		stripState.reset(State_7_steps, sizeof(State_7_steps) / sizeof(On[0]), 250);
 
 		break;
 	case '8':
+		Serial.println(F("Entering 8 State"));
+		stripState.reset(State_8_steps, sizeof(State_8_steps) / sizeof(On[0]), 250);
 
 		break;
 	case '9':
+		Serial.println(F("Entering 9 State"));
+		stripState.reset(State_9_steps, sizeof(State_9_steps) / sizeof(On[0]), 250);
 
 		break;
 	case '0':
