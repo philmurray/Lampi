@@ -10,19 +10,19 @@ class StripState
 	public:
 		StripState(Adafruit_NeoPixel* str);
 		void update ();
-		void reset(struct StripStateStep steps[], byte len, float transitionLength);
+		void reset(const struct StripStateStep steps[], byte len, float transitionLength);
 	protected:
-		void getPinColor(byte p, struct StripStateStep steps[], byte stepsLength, unsigned long timeEl, int* r, int* g, int* b, int* w);
+		void getPinColor(byte p, const struct StripStateStep steps[], byte stepsLength, unsigned long timeEl, int* r, int* g, int* b, int* w);
 		void updateTime();
 
 		float transitionProgress();
 		Adafruit_NeoPixel* strip;
 
-		StripStateStep* Steps;
+		const StripStateStep* Steps;
 		byte StepsLength;
 
 		float TransitionLength;
-		StripStateStep* TransitionSteps;
+		const StripStateStep* TransitionSteps;
 		byte TransitionStepsLength;
 	private:
 		unsigned long timeElapsed;

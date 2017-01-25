@@ -56,28 +56,29 @@ Selector AllSelector = Selector();
 
 Ease OnNow = Ease(0, 255, 0, false);
 Ease OffNow = Ease(0, 0, 0, false);
+
 Ease SubtractNow = Ease(-255, -255, 0, false);
 SineEase OnMediumEase = SineEase(0, 255, 750, false);
 SineEase OffMediumEase = SineEase(0, 0, 750, false);
 
 
-StripStateStep On[] = {
+const PROGMEM StripStateStep On[] = {
   {0,-1,&AllSelector, 0, 0, 0, &OnNow}
 };
 
-StripStateStep Off[] = {
+const PROGMEM StripStateStep Off[] = {
   {0,-1,&AllSelector, 0, 0, 0, &OffNow }
 };
 
 
 RowRunnerSelector UpR = RowRunnerSelector(0, 5, 0, 9, 60, 3, 6, false);
-StripStateStep Up[] = {
+const PROGMEM StripStateStep Up[] = {
 	{0,-1,&UpR, 0,0,0,&OnNow}
 };
 
 Ease s1e1 = Ease(0, 10, 0, false);
 SineEase s1e2 = SineEase(0, 255, 250, true);
-StripStateStep State_1_steps[] = {
+const PROGMEM StripStateStep State_1_steps[] = {
 	{ 0, -1, &AllSelector, 0, 0, &s1e1, &s1e1 },
 	{ 500, 1000, &AllSelector, 0, 0, &s1e2, 0 },
 	{ 2250, 1000, &AllSelector, 0, 0, &s1e2, 0 },
@@ -88,7 +89,7 @@ LinearEase s2e3 = LinearEase(0, 255, 1000, false);
 LinearEase s2e4 = LinearEase(0, 120, 1000, false);
 RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 2000, true, false, 0);
 RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, 2000, true, true, 1000);
-StripStateStep State_2_steps[] = {
+const PROGMEM StripStateStep State_2_steps[] = {
 	{ 0,3000,&s2s1, &s2e4, 0,&s2e3,0 },
 	{ 3000,6000,&s2s2, &s2e4, 0, &s2e3, 0 }
 };
@@ -98,7 +99,7 @@ SineEase s3e4 = SineEase(0, 50, 750, false);
 RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 4, 2000, true, false, 0);
 ColWipeSelector s3s2 = ColWipeSelector(0, 5, 0, 4, 2000, false, false, 0);
 ColWipeSelector s3s3 = ColWipeSelector(0, 5, 4, 9, 2000, true, false, 0);
-StripStateStep State_3_steps[] = {
+const PROGMEM StripStateStep State_3_steps[] = {
 	{ 0,-1,&s3s1, &s3e2, &OffMediumEase, &s3e4,0 },
 	{ 2000,-1,&s3s2, &OnMediumEase, 0,0,0 },
 	{ 2000,-1,&s3s3, &OnMediumEase, 0,0,0 }
@@ -112,7 +113,7 @@ RowRunnerSelector s4s3 = RowRunnerSelector(0, 5, 4, 4, 100, 1, 19, true);
 RowRunnerSelector s4s4 = RowRunnerSelector(0, 5, 1, 1, 100, 1, 11, true);
 RowRunnerSelector s4s5 = RowRunnerSelector(0, 5, 7, 7, 100, 1, 17, true);
 RowWipeSelector s4s6 = RowWipeSelector(0, 5, 0, 9, 4000, true, false, 0);
-StripStateStep State_4_steps[] = {
+const PROGMEM StripStateStep State_4_steps[] = {
 	{ 0,5000,&s4s1, 0, &OnNow, 0 ,0 },
 	{ 0,5000,&s4s2, 0, &OnNow, 0 ,0 },
 	{ 0,5000,&s4s3, 0, &OnNow, 0 ,0 },
@@ -121,7 +122,7 @@ StripStateStep State_4_steps[] = {
 	{ 1000,-1,&s4s6, 0, &s4e1, 0 ,&s4e2 },
 };
 
-StripStateStep State_5_steps[] = {
+const PROGMEM StripStateStep State_5_steps[] = {
 	{ 0,5000,&s2s1, 0, 0,&s2e3,0 },
 	{ 1000,3000,&s2s1, &s2e4, 0,0,0 },
 	{ 4000,3000,&s2s2, &s2e4, 0,0,0 },
@@ -131,7 +132,7 @@ StripStateStep State_5_steps[] = {
 ColRunnerSelector s6s1 = ColRunnerSelector(0, 1, 0, 9, 250, 2, 5, false);
 ColRunnerSelector s6s2 = ColRunnerSelector(2, 3, 0, 9, 250, 2, 5, true);
 ColRunnerSelector s6s3 = ColRunnerSelector(4, 5, 0, 9, 250, 2, 5, false);
-StripStateStep State_6_steps[] = {
+const PROGMEM StripStateStep State_6_steps[] = {
 	{ 0, -1, &AllSelector, 0,0,&OnNow, 0},
 	{ 0, -1, &s6s1, &OnNow, 0,&SubtractNow,0 },
 	{ 0, -1, &s6s2, &OnNow, 0,&SubtractNow,0 },
@@ -142,29 +143,45 @@ RowWipeSelector s7s1 = RowWipeSelector(0,5,0,2,2500,true,false,0);
 RowWipeSelector s7s2 = RowWipeSelector(0, 5, 7, 9, 2500, false, false, 0);
 ColWipeSelector s7s3 = ColWipeSelector(0, 5, 2, 9, 5000, true, false, 0);
 ColWipeSelector s7s4 = ColWipeSelector(0, 5, 0, 7, 5000, false, false, 0);
-StripStateStep State_7_steps[] = {
+const PROGMEM StripStateStep State_7_steps[] = {
 	{ 0, -1, &s7s1, 0,&OnMediumEase,0, 0 },
 	{ 0, -1, &s7s2, 0, 0, &OnMediumEase, 0 },
-	{ 2500, -1, &s7s3, 0,&OnMediumEase,0, 0 },
-	{ 2500, -1, &s7s4, 0, 0, &OnMediumEase, 0 }
+	{ 2000, -1, &s7s3, 0,&OnMediumEase,0, 0 },
+	{ 2000, -1, &s7s4, 0, 0, &OnMediumEase, 0 }
 };
 
 ColRunnerSelector s8s1 = ColRunnerSelector(0, 5, 0, 9, 150, 5, 10, false);
-StripStateStep State_8_steps[] = {
+const PROGMEM StripStateStep State_8_steps[] = {
 	{ 0, -1, &AllSelector, &s2e4,0,0, 0 },
 	{ 0, -1, &s8s1, 0,0,&OnMediumEase , 0 }
 };
 
+LinearEase s9s0 = LinearEase(0, -255, 1000, false);
+BlockSelector s9s1 = BlockSelector(4, 4, 3, 3);
+BlockSelector s9s2 = BlockSelector(5, 5, 5, 5);
+BlockSelector s9s3 = BlockSelector(4, 4, 6, 6);
+BlockSelector s9s4 = BlockSelector(5, 5, 4, 4);
+BlockSelector s9s5 = BlockSelector(3, 3, 7, 7);
+const PROGMEM StripStateStep State_9_steps[] = {
+	{0, -1, &AllSelector, 0, &OnNow, 0, 0},
+	//{ 1000, -1,&s2s2, &s2e4, 0, &s2e3, 0 },
+	{ 750, -1, &s9s1, &s2e4, &SubtractNow, &s2e3, 0},
+	{ 1000, -1, &s9s2, &s2e4, &SubtractNow, &s2e3, 0 },
+	{ 1250, -1, &s9s3, &s2e4, &SubtractNow, &s2e3, 0 },
+	{ 1500, -1, &s9s4, &s2e4, &SubtractNow, &s2e3, 0 },
+	{ 2000, -1, &s9s5, &s2e4, &SubtractNow, &s2e3, 0 }
+};
 
-RowWipeSelector s9s1 = RowWipeSelector(4, 5, 0, 9, 2000, false, false, 0);
-StripStateStep State_9_steps[] = {
+
+RowWipeSelector s10s1 = RowWipeSelector(4, 5, 0, 9, 2000, false, false, 0);
+const PROGMEM StripStateStep State_10_steps[] = {
 	{ 0,-1,&s4s1, 0, &OnNow, 0 ,0 },
 	{ 0,-1,&s4s2, 0, &OnNow, 0 ,0 },
 	{ 0,-1,&s4s3, 0, &OnNow, 0 ,0 },
 	{ 0,-1,&s4s4, 0, &OnNow, 0 ,0 },
 	{ 0,-1,&s4s5, 0, &OnNow, 0 ,0 },
 	{ 1000,-1,&s3s1, &OnMediumEase, 0, 0,0 },
-	{ 3000,-1,&s9s1, &OnMediumEase, 0, 0,0 }
+	{ 3000,-1,&s10s1, &OnMediumEase, 0, 0,0 }
 };
 
 
@@ -324,6 +341,8 @@ void selectStripMode(char mode) {
 
 		break;
 	case '0':
+		Serial.println(F("Entering 9 State"));
+		stripState.reset(State_10_steps, sizeof(State_10_steps) / sizeof(On[0]), 250);
 
 		break;
 	case 'a':

@@ -58,7 +58,7 @@ void StripState::update()
 	strip->show();
 }
 
-void StripState::reset(struct StripStateStep steps[], byte len, float transitionLength)
+void StripState::reset(const struct StripStateStep steps[], byte len, float transitionLength)
 {
 	if (transitionLength > 0.0f && transitionProgress() > 0.5f)
 	{
@@ -75,13 +75,16 @@ void StripState::reset(struct StripStateStep steps[], byte len, float transition
 	startTime = millis();
 }
 
-void StripState::getPinColor(byte pin, struct StripStateStep steps[], byte stepsLength, unsigned long timeEl, int * red, int * green, int * blue, int * white)
+void StripState::getPinColor(byte pin, const struct StripStateStep steps[], byte stepsLength, unsigned long timeEl, int * red, int * green, int * blue, int * white)
 {
 
 	for (byte s = 0; s < stepsLength; s++)
 	{
 		unsigned long st = timeEl;
-		StripStateStep step = steps[s];
+		StripStateStep step;
+
+		memcpy_P(&step, &steps[s], sizeof(step));
+
 		if (step.StartTime <= st && step.Duration > st - step.StartTime)
 		{
 			st = st - step.StartTime;
