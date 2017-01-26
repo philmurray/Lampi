@@ -14,7 +14,6 @@ class Ease
   protected:
     unsigned long adjustedTime(unsigned long currentTime);
     bool Repeat;
-    bool Reversed;
 };
 
 #endif

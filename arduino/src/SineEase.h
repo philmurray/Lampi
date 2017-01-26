@@ -18,10 +18,6 @@ public:
 		{
 			type = SINE_IN_OUT;
 		}
-		else if (Reversed)
-		{
-			type = SINE_OUT;
-		}
 		else 
 		{
 			type = SINE_IN;

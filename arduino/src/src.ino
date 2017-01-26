@@ -55,6 +55,7 @@ StripState stripState = StripState(&strip);
 Selector AllSelector = Selector();
 
 Ease OnNow = Ease(0, 255, 0, false);
+Ease OnNowHalf = Ease(0, 120, 0, false);
 Ease OffNow = Ease(0, 0, 0, false);
 
 Ease SubtractNow = Ease(-255, -255, 0, false);
@@ -157,23 +158,30 @@ const PROGMEM StripStateStep State_8_steps[] = {
 };
 
 LinearEase s9s0 = LinearEase(0, -255, 1000, false);
-BlockSelector s9s1 = BlockSelector(4, 4, 3, 3);
-BlockSelector s9s2 = BlockSelector(5, 5, 5, 5);
-BlockSelector s9s3 = BlockSelector(4, 4, 6, 6);
-BlockSelector s9s4 = BlockSelector(5, 5, 4, 4);
-BlockSelector s9s5 = BlockSelector(3, 3, 7, 7);
+BlockSelector s9s1 = BlockSelector(2, 2, 4, 4);
+BlockSelector s9s2 = BlockSelector(3, 3, 6, 6);
+BlockSelector s9s3 = BlockSelector(5, 5, 5, 5);
+BlockSelector s9s4 = BlockSelector(2, 2, 8, 8);
+BlockSelector s9s5 = BlockSelector(5, 5, 2, 2);
+BlockSelector s9s6 = BlockSelector(4, 4, 4, 4);
+BlockSelector s9s7 = BlockSelector(4, 4, 7, 7);
+BlockSelector s9s8 = BlockSelector(3, 3, 3, 3);
 const PROGMEM StripStateStep State_9_steps[] = {
-	{0, -1, &AllSelector, 0, &OnNow, 0, 0},
-	//{ 1000, -1,&s2s2, &s2e4, 0, &s2e3, 0 },
-	{ 750, -1, &s9s1, &s2e4, &SubtractNow, &s2e3, 0},
-	{ 1000, -1, &s9s2, &s2e4, &SubtractNow, &s2e3, 0 },
-	{ 1250, -1, &s9s3, &s2e4, &SubtractNow, &s2e3, 0 },
-	{ 1500, -1, &s9s4, &s2e4, &SubtractNow, &s2e3, 0 },
-	{ 2000, -1, &s9s5, &s2e4, &SubtractNow, &s2e3, 0 }
+	{ 0, 250, &AllSelector, &OnNowHalf, 0, &OnNow, 0},
+	{ 250, -1, &AllSelector, 0, &OnNow, 0, 0 },
+	{ 250, -1, &s2s2, &s2e4, &s9s0, &s2e3, 0 },
+	{ 2750, -1, &s9s1, &s2e4, &SubtractNow, &s2e3, 0},
+	{ 2900, -1, &s9s2, &s2e4, &SubtractNow, &s2e3, 0 },
+	{ 3050, -1, &s9s3, &s2e4, &SubtractNow, &s2e3, 0 },
+	{ 3200, -1, &s9s4, &s2e4, &SubtractNow, &s2e3, 0 },
+	{ 3350, -1, &s9s5, &s2e4, &SubtractNow, &s2e3, 0 },
+	{ 3500, -1, &s9s6, &s2e4, &SubtractNow, &s2e3, 0 },
+	{ 3650, -1, &s9s7, &s2e4, &SubtractNow, &s2e3, 0 },
+	{ 3800, -1, &s9s8, &s2e4, &SubtractNow, &s2e3, 0 }
 };
 
 
-RowWipeSelector s10s1 = RowWipeSelector(4, 5, 0, 9, 2000, false, false, 0);
+RowWipeSelector s10s1 = RowWipeSelector(3, 5, 0, 9, 2000, false, false, 0);
 const PROGMEM StripStateStep State_10_steps[] = {
 	{ 0,-1,&s4s1, 0, &OnNow, 0 ,0 },
 	{ 0,-1,&s4s2, 0, &OnNow, 0 ,0 },
@@ -182,6 +190,39 @@ const PROGMEM StripStateStep State_10_steps[] = {
 	{ 0,-1,&s4s5, 0, &OnNow, 0 ,0 },
 	{ 1000,-1,&s3s1, &OnMediumEase, 0, 0,0 },
 	{ 3000,-1,&s10s1, &OnMediumEase, 0, 0,0 }
+};
+
+SineEase sae1 = SineEase(0, 255, 2000, true);
+RowWipeSelector sas1 = RowWipeSelector(0, 5, 0, 9, 2000, true, false, 0);
+ColWipeSelector sas2 = ColWipeSelector(0, 5, 0, 9, 2000, true, false, 0);
+const PROGMEM StripStateStep State_a_steps[] = {
+	{ 0,-1,&sas1, 0, 0, &sae1 ,0 },
+	{ 0,-1,&sas2, &sae1, 0, 0 ,0 }
+};
+
+
+LinearEase sbe1 = LinearEase(20,120, 500, true);
+LinearEase sbe2 = LinearEase(0, 100, 300, false);
+LinearEase sbe3 = LinearEase(0, 120, 300, false);
+LinearEase sbe4 = LinearEase(0, 250, 300, false);
+BlockSelector sbs1 = BlockSelector(0, 0, 0, 9);
+RowRunnerSelector sbs2 = RowRunnerSelector(1, 5, 0, 9, 150, 2, 3, false);
+RowRunnerSelector sbs3 = RowRunnerSelector(1, 3, 0, 9, 250, 3, 4, false);
+
+const PROGMEM StripStateStep State_b_steps[] = {
+	{0,-1, &sbs1, 0, &sbe1, 0, 0 },
+	{ 0,-1, &sbs2, 0, 0, &sbe2, 0 },
+	{ 0,-1, &sbs3, &sbe3, 0, &sbe4, 0 }
+};
+
+SineEase sce1 = SineEase(0, 255, 1000, false);
+ColWipeSelector scs1 = ColWipeSelector(2, 3, 0, 9, 750, true, false, 0);
+RowWipeSelector scs2 = RowWipeSelector(0, 3, 0, 9, 3000, true, false, 0);
+RowWipeSelector scs3 = RowWipeSelector(2, 5, 0, 9, 3000, false, false, 0);
+const PROGMEM StripStateStep State_c_steps[] = {
+	{ 0,-1, &scs1, 0, &OnMediumEase, 0, 0 },
+	{ 1000,-1, &scs2, &sce1, 0, 0, 0 },
+	{ 1000,-1, &scs3, 0, 0, &sce1, 0 }
 };
 
 
@@ -346,12 +387,18 @@ void selectStripMode(char mode) {
 
 		break;
 	case 'a':
+		Serial.println(F("Entering a State"));
+		stripState.reset(State_a_steps, sizeof(State_a_steps) / sizeof(On[0]), 250);
 
 		break;
 	case 'b':
+		Serial.println(F("Entering b State"));
+		stripState.reset(State_b_steps, sizeof(State_b_steps) / sizeof(On[0]), 250);
 
 		break;
 	case 'c':
+		Serial.println(F("Entering c State"));
+		stripState.reset(State_c_steps, sizeof(State_c_steps) / sizeof(On[0]), 250);
 
 		break;
 	case 'd':

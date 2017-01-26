@@ -7,12 +7,6 @@ Ease::Ease(int min, int max, unsigned long duration, bool repeat)
   MaxVal = max;
   Duration = duration;
   Repeat = repeat;
-  if (MinVal > MaxVal)
-  {
-    Reversed = true;
-    MinVal = max;
-    MaxVal = min;
-  }
 }
 
 int Ease::Calc(unsigned long currentTime)
@@ -34,10 +28,6 @@ unsigned long Ease::adjustedTime(unsigned long currentTime)
   else
   {
     t = constrain(currentTime, 0, Duration);
-  }
-  if (Reversed)
-  {
-    t = Duration - t;
   }
   //Serial.println(" currentTime: " + String(currentTime) + " reversed " + String(Reversed) + " Duration " + String(Duration) + " t " + String(t) );
   return t;
