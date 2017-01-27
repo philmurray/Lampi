@@ -12,6 +12,7 @@
 #include "BlockSelector.h"
 #include "RowWipeSelector.h"
 #include "ColWipeSelector.h"
+#include "RowWipeSelectorReverse.h"
 #include "RowRunnerSelector.h"
 #include "ColRunnerSelector.h"
 
@@ -88,8 +89,8 @@ const PROGMEM StripStateStep State_1_steps[] = {
 
 LinearEase s2e3 = LinearEase(0, 255, 1000, false);
 LinearEase s2e4 = LinearEase(0, 120, 1000, false);
-RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 2000, true, false, 0);
-RowWipeSelector s2s2 = RowWipeSelector(0, 5, 0, 9, 2000, true, true, 1000);
+RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 2000, true);
+RowWipeSelectorReverse s2s2 = RowWipeSelectorReverse(0, 5, 0, 9, 2000, true, 1000);
 const PROGMEM StripStateStep State_2_steps[] = {
 	{ 0,3000,&s2s1, &s2e4, 0,&s2e3,0 },
 	{ 3000,6000,&s2s2, &s2e4, 0, &s2e3, 0 }
@@ -97,9 +98,9 @@ const PROGMEM StripStateStep State_2_steps[] = {
 
 SineEase s3e2 = SineEase(0, 120, 750, false);
 SineEase s3e4 = SineEase(0, 50, 750, false);
-RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 4, 2000, true, false, 0);
-ColWipeSelector s3s2 = ColWipeSelector(0, 5, 0, 4, 2000, false, false, 0);
-ColWipeSelector s3s3 = ColWipeSelector(0, 5, 4, 9, 2000, true, false, 0);
+RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 4, 2000, true);
+ColWipeSelector s3s2 = ColWipeSelector(0, 5, 0, 4, 2000, false);
+ColWipeSelector s3s3 = ColWipeSelector(0, 5, 4, 9, 2000, true);
 const PROGMEM StripStateStep State_3_steps[] = {
 	{ 0,-1,&s3s1, &s3e2, &OffMediumEase, &s3e4,0 },
 	{ 2000,-1,&s3s2, &OnMediumEase, 0,0,0 },
@@ -113,7 +114,7 @@ RowRunnerSelector s4s2 = RowRunnerSelector(0, 5, 3, 3, 100, 1, 13, true);
 RowRunnerSelector s4s3 = RowRunnerSelector(0, 5, 4, 4, 100, 1, 19, true);
 RowRunnerSelector s4s4 = RowRunnerSelector(0, 5, 1, 1, 100, 1, 11, true);
 RowRunnerSelector s4s5 = RowRunnerSelector(0, 5, 7, 7, 100, 1, 17, true);
-RowWipeSelector s4s6 = RowWipeSelector(0, 5, 0, 9, 4000, true, false, 0);
+RowWipeSelector s4s6 = RowWipeSelector(0, 5, 0, 9, 4000, true);
 const PROGMEM StripStateStep State_4_steps[] = {
 	{ 0,5000,&s4s1, 0, &OnNow, 0 ,0 },
 	{ 0,5000,&s4s2, 0, &OnNow, 0 ,0 },
@@ -130,20 +131,23 @@ const PROGMEM StripStateStep State_5_steps[] = {
 	{ 5000,3000,&s2s2, 0, 0, &s2e3, 0 }
 };
 
-ColRunnerSelector s6s1 = ColRunnerSelector(0, 1, 0, 9, 250, 2, 5, false);
-ColRunnerSelector s6s2 = ColRunnerSelector(2, 3, 0, 9, 250, 2, 5, true);
-ColRunnerSelector s6s3 = ColRunnerSelector(4, 5, 0, 9, 250, 2, 5, false);
+SineEase s6e1 = SineEase(0, -255, 250, true);
+ColWipeSelector s6s1 = ColWipeSelector(0, 1, 0, 9, 750, true);
+ColWipeSelector s6s2 = ColWipeSelector(2, 3, 0, 9, 750, false);
+ColWipeSelector s6s3 = ColWipeSelector(4, 5, 0, 9, 750, true);
+BlockSelector s6s4 = BlockSelector(1, 4, 3, 6);
 const PROGMEM StripStateStep State_6_steps[] = {
-	{ 0, -1, &AllSelector, 0,0,&OnNow, 0},
-	{ 0, -1, &s6s1, &OnNow, 0,&SubtractNow,0 },
-	{ 0, -1, &s6s2, &OnNow, 0,&SubtractNow,0 },
-	{ 0, -1, &s6s3, &OnNow, 0,&SubtractNow,0 }
+	{ 0, -1, &s6s1, &OnMediumEase, 0,0,0 },
+	{ 500, -1, &s6s2, &OnMediumEase, 0,0,0 },
+	{ 1000, -1, &s6s3, &OnMediumEase, 0,0,0 },
+	{ 2250, 1000, &s6s4, &s6e1, 0, &s1e2, 0 },
+	{ 4000, 1000, &s6s4, &s6e1, 0, &s1e2, 0 }
 };
 
-RowWipeSelector s7s1 = RowWipeSelector(0,5,0,2,2500,true,false,0);
-RowWipeSelector s7s2 = RowWipeSelector(0, 5, 7, 9, 2500, false, false, 0);
-ColWipeSelector s7s3 = ColWipeSelector(0, 5, 2, 9, 5000, true, false, 0);
-ColWipeSelector s7s4 = ColWipeSelector(0, 5, 0, 7, 5000, false, false, 0);
+RowWipeSelector s7s1 = RowWipeSelector(0,5,0,2,2500,true);
+RowWipeSelector s7s2 = RowWipeSelector(0, 5, 7, 9, 2500, false);
+ColWipeSelector s7s3 = ColWipeSelector(0, 5, 2, 9, 5000, true);
+ColWipeSelector s7s4 = ColWipeSelector(0, 5, 0, 7, 5000, false);
 const PROGMEM StripStateStep State_7_steps[] = {
 	{ 0, -1, &s7s1, 0,&OnMediumEase,0, 0 },
 	{ 0, -1, &s7s2, 0, 0, &OnMediumEase, 0 },
@@ -151,10 +155,23 @@ const PROGMEM StripStateStep State_7_steps[] = {
 	{ 2000, -1, &s7s4, 0, 0, &OnMediumEase, 0 }
 };
 
-ColRunnerSelector s8s1 = ColRunnerSelector(0, 5, 0, 9, 150, 5, 10, false);
+RowWipeSelector s8s1 = RowWipeSelector(0, 2, 4, 4, 1000, true);
+BlockSelector s8s2 = BlockSelector(2, 2, 4, 4);
+RowWipeSelector s8s3 = RowWipeSelector(0, 3, 6, 6, 1000, true);
+BlockSelector s8s4 = BlockSelector(3, 3, 6, 6);
+RowWipeSelector s8s5 = RowWipeSelector(0, 2, 8, 8, 1000, true);
+BlockSelector s8s6 = BlockSelector(2, 2, 8, 8);
+RowWipeSelector s8s7 = RowWipeSelector(0, 4, 2, 2, 1000, true);
+BlockSelector s8s8 = BlockSelector(4, 4, 2, 2);
 const PROGMEM StripStateStep State_8_steps[] = {
-	{ 0, -1, &AllSelector, &s2e4,0,0, 0 },
-	{ 0, -1, &s8s1, 0,0,&OnMediumEase , 0 }
+	{ 0, -1, &s8s1, &s2e4,0,0, 0 },
+	{ 1500, -1, &s8s2, 0,0,&OnMediumEase, 0 },
+	{ 2250, -1, &s8s3, &s2e4,0,0, 0 },
+	{ 3750, -1, &s8s4, 0,0,&OnMediumEase, 0 },
+	{ 2750, -1, &s8s5, &s2e4,0,0, 0 },
+	{ 4250, -1, &s8s6, 0,0,&OnMediumEase, 0 },
+	{ 3000, -1, &s8s7, &s2e4,0,0, 0 },
+	{ 4500, -1, &s8s8, 0,0,&OnMediumEase, 0 },
 };
 
 LinearEase s9s0 = LinearEase(0, -255, 1000, false);
@@ -181,7 +198,7 @@ const PROGMEM StripStateStep State_9_steps[] = {
 };
 
 
-RowWipeSelector s10s1 = RowWipeSelector(3, 5, 0, 9, 2000, false, false, 0);
+RowWipeSelector s10s1 = RowWipeSelector(3, 5, 0, 9, 2000, false);
 const PROGMEM StripStateStep State_10_steps[] = {
 	{ 0,-1,&s4s1, 0, &OnNow, 0 ,0 },
 	{ 0,-1,&s4s2, 0, &OnNow, 0 ,0 },
@@ -193,8 +210,8 @@ const PROGMEM StripStateStep State_10_steps[] = {
 };
 
 SineEase sae1 = SineEase(0, 255, 2000, true);
-RowWipeSelector sas1 = RowWipeSelector(0, 5, 0, 9, 2000, true, false, 0);
-ColWipeSelector sas2 = ColWipeSelector(0, 5, 0, 9, 2000, true, false, 0);
+RowWipeSelector sas1 = RowWipeSelector(0, 5, 0, 9, 2000, true);
+ColWipeSelector sas2 = ColWipeSelector(0, 5, 0, 9, 2000, true);
 const PROGMEM StripStateStep State_a_steps[] = {
 	{ 0,-1,&sas1, 0, 0, &sae1 ,0 },
 	{ 0,-1,&sas2, &sae1, 0, 0 ,0 }
@@ -216,15 +233,37 @@ const PROGMEM StripStateStep State_b_steps[] = {
 };
 
 SineEase sce1 = SineEase(0, 255, 1000, false);
-ColWipeSelector scs1 = ColWipeSelector(2, 3, 0, 9, 750, true, false, 0);
-RowWipeSelector scs2 = RowWipeSelector(0, 3, 0, 9, 3000, true, false, 0);
-RowWipeSelector scs3 = RowWipeSelector(2, 5, 0, 9, 3000, false, false, 0);
+ColWipeSelector scs1 = ColWipeSelector(2, 3, 0, 9, 750, true);
+RowWipeSelector scs2 = RowWipeSelector(0, 3, 0, 9, 3000, true);
+RowWipeSelector scs3 = RowWipeSelector(2, 5, 0, 9, 3000, false);
 const PROGMEM StripStateStep State_c_steps[] = {
 	{ 0,-1, &scs1, 0, &OnMediumEase, 0, 0 },
 	{ 1000,-1, &scs2, &sce1, 0, 0, 0 },
 	{ 1000,-1, &scs3, 0, 0, &sce1, 0 }
 };
 
+LinearEase sde1 = LinearEase(0, 120, 3000, false);
+LinearEase sde2 = LinearEase(0, -255, 3000, false);
+LinearEase sde3 = LinearEase(0, 255, 3000, false);
+RowWipeSelector sds1 = RowWipeSelector(0, 1, 0, 9, 1000, false);
+const PROGMEM StripStateStep State_d_steps[] = {
+	{ 0,-1,&s4s1, 0, &OnNow, 0 ,0 },
+	{ 0,-1,&s4s2, 0, &OnNow, 0 ,0 },
+	{ 0,-1,&s4s3, 0, &OnNow, 0 ,0 },
+	{ 0,-1,&s4s4, 0, &OnNow, 0 ,0 },
+	{ 0,-1,&s4s5, 0, &OnNow, 0 ,0 },
+	{ 2000, -1, &AllSelector, &sde1, &sde2, &sde3, 0},
+	{ 3000, -1, &sds1, &OnMediumEase, 0, &s9s0, 0 }
+};
+
+
+SineEase see1 = SineEase(0, 255, 1000, true);
+ColWipeSelector ses1 = ColWipeSelector(0, 5, 0, 9, 2000, true);
+const PROGMEM StripStateStep State_e_steps[] = {
+	{ 0, -1, &ses1, &see1, 0, 0, 0 },
+	{ 666, -1, &ses1, 0, &see1, 0, 0 },
+	{ 1333, -1, &ses1, 0, 0, &see1, 0 }
+};
 
 void setup() {
 	Serial.begin(9600);
@@ -402,9 +441,13 @@ void selectStripMode(char mode) {
 
 		break;
 	case 'd':
+		Serial.println(F("Entering d State"));
+		stripState.reset(State_d_steps, sizeof(State_d_steps) / sizeof(On[0]), 250);
 
 		break;
 	case 'e':
+		Serial.println(F("Entering e State"));
+		stripState.reset(State_e_steps, sizeof(State_e_steps) / sizeof(On[0]), 250);
 
 		break;
 	}
