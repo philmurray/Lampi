@@ -381,7 +381,7 @@ class HandleMessage(State):
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in pins.items():
-            if button_key == key or ( buttons is not None and val['strip_code'] & buttons )
+            if button_key == key or ( buttons is not None and val['strip_code'] & buttons ):
                 utilities.lights_message(ser, val['light_pin'] + 's')
             else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
