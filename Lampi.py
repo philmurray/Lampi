@@ -300,7 +300,7 @@ class BuildMessage(State):
         for key,val in pins.items():
             utilities.lights_message(ser, val['light_pin'] + 'f')
 
-        self.add(key)
+        self.addButton(key)
 
     def run(self):
         global current_state
