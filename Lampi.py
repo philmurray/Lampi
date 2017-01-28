@@ -307,7 +307,7 @@ class BuildMessage(State):
         if self.start_time + BuildMessage.timeout < time.time():
             current_state = Idle()
 
-    def addButton(key):
+    def addButton(self, key):
         logging.debug("BuildMessage: Adding " + key)
         utilities.lights_message(ser, pins[key]['light_pin'] + 'n')
         self.buttons += pins[key]['strip_code']
