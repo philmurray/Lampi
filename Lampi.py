@@ -26,19 +26,23 @@ time.sleep(2)
 pins = {
     "b1": {
         "button_pin": int(lampiConfig['b1_pin']),
-        "light_pin": lampiConfig['b1_char']
+        "light_pin": lampiConfig['b1_char'],
+        "strip_code": int(lampiConfig['b1_s'], 2)
     },
     "b2": {
         "button_pin": int(lampiConfig['b2_pin']),
-        "light_pin": lampiConfig['b2_char']
+        "light_pin": lampiConfig['b2_char'],
+        "strip_code": int(lampiConfig['b2_s'], 2)
     },
     "b3": {
         "button_pin": int(lampiConfig['b3_pin']),
-        "light_pin": lampiConfig['b3_char']
+        "light_pin": lampiConfig['b3_char'],
+        "strip_code": int(lampiConfig['b3_s'], 2)
     },
     "b4": {
         "button_pin": int(lampiConfig['b4_pin']),
-        "light_pin": lampiConfig['b4_char']
+        "light_pin": lampiConfig['b4_char'],
+        "strip_code": int(lampiConfig['b4_s'], 2)
     },
 }
 
@@ -67,6 +71,24 @@ lamps = {
         "light_pin": dbConfig['ipac_light'],
         "is_me": dbConfig['ipac_isme'] == 'True'
     }
+}
+
+strip_codes = {
+    int('0001', 2): "1",
+    int('0010', 2): "2",
+    int('0100', 2): "3",
+    int('1000', 2): "4",
+    int('0011', 2): "5",
+    int('0101', 2): "6",
+    int('1001', 2): "7",
+    int('0110', 2): "8",
+    int('1010', 2): "9",
+    int('1100', 2): "0",
+    int('0111', 2): "a",
+    int('1011', 2): "b",
+    int('1101', 2): "c",
+    int('1110', 2): "d",
+    int('1111', 2): "e"
 }
 
 my_lamp = ""
@@ -146,6 +168,7 @@ def main():
 
         time.sleep(interval)
 
+
 class State:
     def run(self):
         logging.warning("not implemented")
@@ -214,7 +237,7 @@ class Idle(State):
             try:
                 message = messagesCollection.find_one_and_update({"lampId": my_lamp, "time":{"$gt": time.time() - Idle.message_interval * 2}, "handled": False}, {"$set": {"handled": True}})
                 if message is not None:
-                    current_state = HandleMessage(message["from"], message["message"])
+                    current_state = HandleMessage(message["from"], message["message"], message.get("stripCode"))
             except Exception as e:
                 logging.error('failure getting lamp message.')
                 if hasattr(e, 'message'):
@@ -265,8 +288,8 @@ class BuildMessage(State):
 
     def __init__(self, key):
         logging.debug("Entering BuildMessage state")
-        self.button_key = key
         self.start_time = time.time()
+        self.buttons = 0
 
         for key,val in lamps.items():
             if val["online"]:
@@ -275,35 +298,38 @@ class BuildMessage(State):
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in pins.items():
-            if self.button_key == key:
-                utilities.lights_message(ser, val['light_pin'] + 'n')
-            else:
-                utilities.lights_message(ser, val['light_pin'] + 'f')
+            utilities.lights_message(ser, val['light_pin'] + 'f')
+
+        self.add(key)
 
     def run(self):
         global current_state
         if self.start_time + BuildMessage.timeout < time.time():
             current_state = Idle()
 
+    def addButton(key):
+        utilities.lights_message(ser, pins[key]['light_pin'] + 'n')
+        self.buttons += pins[key]['strip_code']
+
     def handleSymbolButton(self, key):
         global current_state
         global my_lamp
-        if key == self.button_key:
-            current_state = HandleMessage(my_lamp, self.button_key)
+        if pins[key]['strip_code'] & self.buttons:
+            current_state = HandleMessage(my_lamp, "", self.buttons)
         else:
-            current_state = BuildMessage(key)
+            self.addButton(key)
 
     def handleLampButton(self, key):
         global current_state
         if lamps[key]["online"]:
-            current_state = SendMessage(key, self.button_key)
+            current_state = SendMessage(key, self.buttons)
 
 
 class SendMessage(State):
     global my_lamp
     timeout = int(lampiConfig['send_message_timeout'])
 
-    def __init__(self, lamp_key, button_key):
+    def __init__(self, lamp_key, buttons):
         logging.debug("Entering SendMessage state")
         self.start_time = time.time()
 
@@ -313,16 +339,19 @@ class SendMessage(State):
             else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
+        button_key = ""
         for key,val in pins.items():
-            if button_key == key:
+            if buttons & val['strip_code']:
                 utilities.lights_message(ser, val['light_pin'] + 's')
+                if (button_key == ""):
+                    button_key = key
             else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
         utilities.lights_message(ser, 'su')
 
         try:
-            messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": button_key, "time": time.time(), "handled": False })
+            messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": button_key, "stripCode": buttons, "time": time.time(), "handled": False })
         except Exception as e:
             logging.error('failure sending lamp message.')
             if hasattr(e, 'message'):
@@ -339,7 +368,7 @@ class SendMessage(State):
 class HandleMessage(State):
     timeout = int(lampiConfig['handle_message_timeout'])
 
-    def __init__(self, lamp_key, button_key):
+    def __init__(self, lamp_key, button_key, buttons):
         logging.debug("Entering HandleMessage state")
         self.start_time = time.time()
 
@@ -350,12 +379,15 @@ class HandleMessage(State):
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
         for key,val in pins.items():
-            if button_key == key:
+            if button_key == key or ( buttons is not None and val['strip_code'] & buttons )
                 utilities.lights_message(ser, val['light_pin'] + 's')
             else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
-        utilities.lights_message(ser, 's' + pins[button_key]["light_pin"])
+        if (buttons is None):
+            utilities.lights_message(ser, 's' + pins[button_key]["light_pin"])
+        else:
+            utilities.lights_message(ser, 's' + strip_codes[buttons])
 
     def run(self):
         global current_state
