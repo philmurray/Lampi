@@ -56,12 +56,37 @@ StripState stripState = StripState(&strip);
 Selector AllSelector = Selector();
 
 Ease OnNow = Ease(0, 255, 0, false);
-Ease OnNowHalf = Ease(0, 120, 0, false);
+Ease HalfNow = Ease(0, 120, 0, false);
 Ease OffNow = Ease(0, 0, 0, false);
+Ease NegNow = Ease(-255, -255, 0, false);
+Ease MinNow = Ease(0, 10, 0, false);
 
-Ease SubtractNow = Ease(-255, -255, 0, false);
-SineEase OnMediumEase = SineEase(0, 255, 750, false);
+LinearEase HalfSmallEase = LinearEase(0, 120, 300, false);
+LinearEase OnSmallEase = LinearEase(0, 255, 300, false);
+
 SineEase OffMediumEase = SineEase(0, 0, 750, false);
+SineEase QuarterMediumEase = SineEase(0, 50, 750, false);
+SineEase HalfMediumEase = SineEase(0, 120, 750, false);
+SineEase OnMediumEase = SineEase(0, 255, 750, false);
+
+LinearEase NegMediumSineEase = LinearEase(0, -255, 1000, false);
+LinearEase HalfMediumSineEase = LinearEase(0, 120, 1000, false);
+LinearEase OnMediumSineEase = LinearEase(0, 255, 1000, false);
+
+LinearEase NegLongEase = LinearEase(0, -255, 3000, false);
+LinearEase HalfLongEase = LinearEase(0, 120, 3000, false);
+LinearEase OnLongEase = LinearEase(0, 255, 3000, false);
+
+LinearEase MinVLongEase = LinearEase(0, 10, 4000, false);
+LinearEase OnVLongEase = LinearEase(0, 200, 4000, false);
+
+
+SineEase NegSmallSineWave = SineEase(0, -255, 250, true);
+SineEase QuarterSmallSineWave = SineEase(0, 40, 250, true);
+SineEase OnSmallSineWave = SineEase(0, 255, 250, true);
+SineEase HalfMediumSineWave = SineEase(20,120, 500, true);
+SineEase OnMediumSineWave = SineEase(0, 255, 1000, true);
+SineEase OnLongSineWave = SineEase(0, 255, 2000, true);
 
 
 const PROGMEM StripStateStep On[] = {
@@ -78,37 +103,29 @@ const PROGMEM StripStateStep Up[] = {
 	{0,-1,&UpR, 0,0,0,&OnNow}
 };
 
-Ease s1e1 = Ease(0, 10, 0, false);
-SineEase s1e2 = SineEase(0, 255, 250, true);
 const PROGMEM StripStateStep State_1_steps[] = {
-	{ 0, -1, &AllSelector, 0, 0, &s1e1, &s1e1 },
-	{ 500, 1000, &AllSelector, 0, 0, &s1e2, 0 },
-	{ 2250, 1000, &AllSelector, 0, 0, &s1e2, 0 },
-	{ 4000, 1000, &AllSelector, 0, 0, &s1e2, 0 }
+	{ 0, -1, &AllSelector, 0, 0, &MinNow, &MinNow },
+	{ 500, 1000, &AllSelector, 0, 0, &OnSmallSineWave, 0 },
+	{ 2250, 1000, &AllSelector, 0, 0, &OnSmallSineWave, 0 },
+	{ 4000, 1000, &AllSelector, 0, 0, &OnSmallSineWave, 0 }
 };
 
-LinearEase s2e3 = LinearEase(0, 255, 1000, false);
-LinearEase s2e4 = LinearEase(0, 120, 1000, false);
 RowWipeSelector s2s1 = RowWipeSelector(0, 5, 0, 9, 2000, true);
 RowWipeSelectorReverse s2s2 = RowWipeSelectorReverse(0, 5, 0, 9, 2000, true, 1000);
 const PROGMEM StripStateStep State_2_steps[] = {
-	{ 0,3000,&s2s1, &s2e4, 0,&s2e3,0 },
-	{ 3000,6000,&s2s2, &s2e4, 0, &s2e3, 0 }
+	{ 0,3000,&s2s1, &HalfMediumSineEase, 0,&OnMediumSineEase,0 },
+	{ 3000,6000,&s2s2, &HalfMediumSineEase, 0, &OnMediumSineEase, 0 }
 };
 
-SineEase s3e2 = SineEase(0, 120, 750, false);
-SineEase s3e4 = SineEase(0, 50, 750, false);
 RowWipeSelector s3s1 = RowWipeSelector(0, 5, 4, 4, 2000, true);
 ColWipeSelector s3s2 = ColWipeSelector(0, 5, 0, 4, 2000, false);
 ColWipeSelector s3s3 = ColWipeSelector(0, 5, 4, 9, 2000, true);
 const PROGMEM StripStateStep State_3_steps[] = {
-	{ 0,-1,&s3s1, &s3e2, &OffMediumEase, &s3e4,0 },
+	{ 0,-1,&s3s1, &HalfMediumEase, &OffMediumEase, &QuarterMediumEase,0 },
 	{ 2000,-1,&s3s2, &OnMediumEase, 0,0,0 },
 	{ 2000,-1,&s3s3, &OnMediumEase, 0,0,0 }
 };
 
-LinearEase s4e1 = LinearEase(0, 200, 4000, false);
-LinearEase s4e2 = LinearEase(0, 10, 4000, false);
 RowRunnerSelector s4s1 = RowRunnerSelector(0, 5, 5, 5, 100, 1, 7, true);
 RowRunnerSelector s4s2 = RowRunnerSelector(0, 5, 3, 3, 100, 1, 13, true);
 RowRunnerSelector s4s3 = RowRunnerSelector(0, 5, 4, 4, 100, 1, 19, true);
@@ -121,17 +138,16 @@ const PROGMEM StripStateStep State_4_steps[] = {
 	{ 0,5000,&s4s3, 0, &OnNow, 0 ,0 },
 	{ 0,5000,&s4s4, 0, &OnNow, 0 ,0 },
 	{ 0,5000,&s4s5, 0, &OnNow, 0 ,0 },
-	{ 1000,-1,&s4s6, 0, &s4e1, 0 ,&s4e2 },
+	{ 1000,-1,&s4s6, 0, &OnVLongEase, 0 ,&MinVLongEase },
 };
 
 const PROGMEM StripStateStep State_5_steps[] = {
-	{ 0,5000,&s2s1, 0, 0,&s2e3,0 },
-	{ 1000,3000,&s2s1, &s2e4, 0,0,0 },
-	{ 4000,3000,&s2s2, &s2e4, 0,0,0 },
-	{ 5000,3000,&s2s2, 0, 0, &s2e3, 0 }
+	{ 0,5000,&s2s1, 0, 0,&OnMediumSineEase,0 },
+	{ 1000,3000,&s2s1, &HalfMediumSineEase, 0,0,0 },
+	{ 4000,3000,&s2s2, &HalfMediumSineEase, 0,0,0 },
+	{ 5000,3000,&s2s2, 0, 0, &OnMediumSineEase, 0 }
 };
 
-SineEase s6e1 = SineEase(0, -255, 250, true);
 ColWipeSelector s6s1 = ColWipeSelector(0, 1, 0, 9, 750, true);
 ColWipeSelector s6s2 = ColWipeSelector(2, 3, 0, 9, 750, false);
 ColWipeSelector s6s3 = ColWipeSelector(4, 5, 0, 9, 750, true);
@@ -140,8 +156,8 @@ const PROGMEM StripStateStep State_6_steps[] = {
 	{ 0, -1, &s6s1, &OnMediumEase, 0,0,0 },
 	{ 500, -1, &s6s2, &OnMediumEase, 0,0,0 },
 	{ 1000, -1, &s6s3, &OnMediumEase, 0,0,0 },
-	{ 2250, 1000, &s6s4, &s6e1, 0, &s1e2, 0 },
-	{ 4000, 1000, &s6s4, &s6e1, 0, &s1e2, 0 }
+	{ 2250, 1000, &s6s4, &NegSmallSineWave, 0, &OnSmallSineWave, 0 },
+	{ 4000, 1000, &s6s4, &NegSmallSineWave, 0, &OnSmallSineWave, 0 }
 };
 
 RowWipeSelector s7s1 = RowWipeSelector(0,5,0,2,2500,true);
@@ -164,17 +180,16 @@ BlockSelector s8s6 = BlockSelector(2, 2, 8, 8);
 RowWipeSelector s8s7 = RowWipeSelector(0, 4, 2, 2, 1000, true);
 BlockSelector s8s8 = BlockSelector(4, 4, 2, 2);
 const PROGMEM StripStateStep State_8_steps[] = {
-	{ 0, -1, &s8s1, &s2e4,0,0, 0 },
+	{ 0, -1, &s8s1, &HalfMediumSineEase,0,0, 0 },
 	{ 1500, -1, &s8s2, 0,0,&OnMediumEase, 0 },
-	{ 2250, -1, &s8s3, &s2e4,0,0, 0 },
+	{ 2250, -1, &s8s3, &HalfMediumSineEase,0,0, 0 },
 	{ 3750, -1, &s8s4, 0,0,&OnMediumEase, 0 },
-	{ 2750, -1, &s8s5, &s2e4,0,0, 0 },
+	{ 2750, -1, &s8s5, &HalfMediumSineEase,0,0, 0 },
 	{ 4250, -1, &s8s6, 0,0,&OnMediumEase, 0 },
-	{ 3000, -1, &s8s7, &s2e4,0,0, 0 },
+	{ 3000, -1, &s8s7, &HalfMediumSineEase,0,0, 0 },
 	{ 4500, -1, &s8s8, 0,0,&OnMediumEase, 0 },
 };
 
-LinearEase s9s0 = LinearEase(0, -255, 1000, false);
 BlockSelector s9s1 = BlockSelector(2, 2, 4, 4);
 BlockSelector s9s2 = BlockSelector(3, 3, 6, 6);
 BlockSelector s9s3 = BlockSelector(5, 5, 5, 5);
@@ -184,17 +199,17 @@ BlockSelector s9s6 = BlockSelector(4, 4, 4, 4);
 BlockSelector s9s7 = BlockSelector(4, 4, 7, 7);
 BlockSelector s9s8 = BlockSelector(3, 3, 3, 3);
 const PROGMEM StripStateStep State_9_steps[] = {
-	{ 0, 250, &AllSelector, &OnNowHalf, 0, &OnNow, 0},
+	{ 0, 250, &AllSelector, &HalfNow, 0, &OnNow, 0},
 	{ 250, -1, &AllSelector, 0, &OnNow, 0, 0 },
-	{ 250, -1, &s2s2, &s2e4, &s9s0, &s2e3, 0 },
-	{ 2750, -1, &s9s1, &s2e4, &SubtractNow, &s2e3, 0},
-	{ 2900, -1, &s9s2, &s2e4, &SubtractNow, &s2e3, 0 },
-	{ 3050, -1, &s9s3, &s2e4, &SubtractNow, &s2e3, 0 },
-	{ 3200, -1, &s9s4, &s2e4, &SubtractNow, &s2e3, 0 },
-	{ 3350, -1, &s9s5, &s2e4, &SubtractNow, &s2e3, 0 },
-	{ 3500, -1, &s9s6, &s2e4, &SubtractNow, &s2e3, 0 },
-	{ 3650, -1, &s9s7, &s2e4, &SubtractNow, &s2e3, 0 },
-	{ 3800, -1, &s9s8, &s2e4, &SubtractNow, &s2e3, 0 }
+	{ 250, -1, &s2s2, &OnMediumSineEase, &NegMediumSineEase, &OnMediumSineEase, 0 },
+	{ 2750, -1, &s9s1, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
+	{ 2900, -1, &s9s2, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
+	{ 3050, -1, &s9s3, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
+	{ 3200, -1, &s9s4, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
+	{ 3350, -1, &s9s5, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
+	{ 3500, -1, &s9s6, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
+	{ 3650, -1, &s9s7, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
+	{ 3800, -1, &s9s8, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave }
 };
 
 
@@ -208,43 +223,40 @@ const PROGMEM StripStateStep State_10_steps[] = {
 	{ 1000,-1,&s3s1, &OnMediumEase, 0, 0,0 },
 	{ 3000,-1,&s10s1, &OnMediumEase, 0, 0,0 }
 };
-
-SineEase sae1 = SineEase(0, 255, 2000, true);
 RowWipeSelector sas1 = RowWipeSelector(0, 5, 0, 9, 2000, true);
 ColWipeSelector sas2 = ColWipeSelector(0, 5, 0, 9, 2000, true);
 const PROGMEM StripStateStep State_a_steps[] = {
-	{ 0,-1,&sas1, 0, 0, &sae1 ,0 },
-	{ 0,-1,&sas2, &sae1, 0, 0 ,0 }
+	{ 0,-1,&sas1, 0, 0, &OnLongSineWave ,0 },
+	{ 0,-1,&sas2, &OnLongSineWave, 0, 0 ,0 }
 };
 
 
-LinearEase sbe1 = LinearEase(20,120, 500, true);
-LinearEase sbe2 = LinearEase(0, 100, 300, false);
-LinearEase sbe3 = LinearEase(0, 120, 300, false);
-LinearEase sbe4 = LinearEase(0, 250, 300, false);
 BlockSelector sbs1 = BlockSelector(0, 0, 0, 9);
 RowRunnerSelector sbs2 = RowRunnerSelector(1, 5, 0, 9, 150, 2, 3, false);
 RowRunnerSelector sbs3 = RowRunnerSelector(1, 3, 0, 9, 250, 3, 4, false);
 
 const PROGMEM StripStateStep State_b_steps[] = {
-	{0,-1, &sbs1, 0, &sbe1, 0, 0 },
-	{ 0,-1, &sbs2, 0, 0, &sbe2, 0 },
-	{ 0,-1, &sbs3, &sbe3, 0, &sbe4, 0 }
+	{0,-1, &sbs1, 0, &HalfMediumSineWave, 0, 0 },
+	{ 0,-1, &sbs2, 0, 0, &HalfSmallEase, 0 },
+	{ 0,-1, &sbs3, &HalfSmallEase, 0, &OnSmallEase, 0 }
 };
 
-SineEase sce1 = SineEase(0, 255, 1000, false);
-ColWipeSelector scs1 = ColWipeSelector(2, 3, 0, 9, 750, true);
-RowWipeSelector scs2 = RowWipeSelector(0, 3, 0, 9, 3000, true);
-RowWipeSelector scs3 = RowWipeSelector(2, 5, 0, 9, 3000, false);
+ColWipeSelector scs1 = ColWipeSelector(0, 1, 0, 9, 750, true);
+ColWipeSelector scs2 = ColWipeSelector(2, 3, 0, 9, 750, false);
+ColWipeSelector scs3 = ColWipeSelector(4, 5, 0, 9, 750, true);
+RowWipeSelector scs4 = RowWipeSelector(0, 5, 0, 2, 750, true);
+RowWipeSelector scs5 = RowWipeSelector(0, 5, 3, 6, 750, false);
+RowWipeSelector scs6 = RowWipeSelector(0, 5, 7, 9, 750, true);
 const PROGMEM StripStateStep State_c_steps[] = {
-	{ 0,-1, &scs1, 0, &OnMediumEase, 0, 0 },
-	{ 1000,-1, &scs2, &sce1, 0, 0, 0 },
-	{ 1000,-1, &scs3, 0, 0, &sce1, 0 }
+	{ 0,-1, &scs1, &OnMediumSineWave, 0, 0, 0 },
+	{ 750,-1, &scs2, 0, 0, &OnMediumSineWave, 0},
+	{ 1500,-1, &scs3, 0, &OnMediumSineWave, 0, 0 },
+	//{ 2500,-1, &scs4, &s3e2, 0, 0, 0 },
+	//{ 3250,-1, &scs5, 0, 0, &s3e2, 0 },
+	//{ 4000,-1, &scs6, 0, &s3e2, 0, 0 },
+
 };
 
-LinearEase sde1 = LinearEase(0, 120, 3000, false);
-LinearEase sde2 = LinearEase(0, -255, 3000, false);
-LinearEase sde3 = LinearEase(0, 255, 3000, false);
 RowWipeSelector sds1 = RowWipeSelector(0, 1, 0, 9, 1000, false);
 const PROGMEM StripStateStep State_d_steps[] = {
 	{ 0,-1,&s4s1, 0, &OnNow, 0 ,0 },
@@ -252,17 +264,16 @@ const PROGMEM StripStateStep State_d_steps[] = {
 	{ 0,-1,&s4s3, 0, &OnNow, 0 ,0 },
 	{ 0,-1,&s4s4, 0, &OnNow, 0 ,0 },
 	{ 0,-1,&s4s5, 0, &OnNow, 0 ,0 },
-	{ 2000, -1, &AllSelector, &sde1, &sde2, &sde3, 0},
-	{ 3000, -1, &sds1, &OnMediumEase, 0, &s9s0, 0 }
+	{ 2000, -1, &AllSelector, &HalfLongEase, &NegLongEase, &OnLongEase, 0},
+	{ 3000, -1, &sds1, &OnMediumEase, 0, &NegMediumSineEase, 0 }
 };
 
 
-SineEase see1 = SineEase(0, 255, 1000, true);
 ColWipeSelector ses1 = ColWipeSelector(0, 5, 0, 9, 2000, true);
 const PROGMEM StripStateStep State_e_steps[] = {
-	{ 0, -1, &ses1, &see1, 0, 0, 0 },
-	{ 666, -1, &ses1, 0, &see1, 0, 0 },
-	{ 1333, -1, &ses1, 0, 0, &see1, 0 }
+	{ 0, -1, &ses1, &OnMediumSineWave, 0, 0, 0 },
+	{ 666, -1, &ses1, 0, &OnMediumSineWave, 0, 0 },
+	{ 1333, -1, &ses1, 0, 0, &OnMediumSineWave, 0 }
 };
 
 void setup() {
