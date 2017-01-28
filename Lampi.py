@@ -308,6 +308,7 @@ class BuildMessage(State):
             current_state = Idle()
 
     def addButton(key):
+        logging.debug("BuildMessage: Adding " + key)
         utilities.lights_message(ser, pins[key]['light_pin'] + 'n')
         self.buttons += pins[key]['strip_code']
 
@@ -351,6 +352,7 @@ class SendMessage(State):
         utilities.lights_message(ser, 'su')
 
         try:
+            logging.debug("SendMessage: button_key: {}\nbuttons: {}\nto: {}".format(button_key, buttons, lamp_key))
             messagesCollection.insert({"lampId": lamp_key, "from": my_lamp, "message": button_key, "stripCode": buttons, "time": time.time(), "handled": False })
         except Exception as e:
             logging.error('failure sending lamp message.')
@@ -384,10 +386,14 @@ class HandleMessage(State):
             else:
                 utilities.lights_message(ser, val['light_pin'] + 'f')
 
+        key = 's'
         if (buttons is None):
-            utilities.lights_message(ser, 's' + pins[button_key]["light_pin"])
+            key += pins[button_key]["light_pin"]
         else:
-            utilities.lights_message(ser, 's' + strip_codes[buttons])
+            key += strip_codes[buttons]
+
+        logging.debug("HandleMessage: showing: {}".format(key))
+        utilities.lights_message(ser, key)
 
     def run(self):
         global current_state
