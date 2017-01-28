@@ -286,7 +286,7 @@ class Off(State):
 class BuildMessage(State):
     timeout = int(lampiConfig['build_message_timeout'])
 
-    def __init__(self, key):
+    def __init__(self, button_key):
         logging.debug("Entering BuildMessage state")
         self.start_time = time.time()
         self.buttons = 0
@@ -300,7 +300,7 @@ class BuildMessage(State):
         for key,val in pins.items():
             utilities.lights_message(ser, val['light_pin'] + 'f')
 
-        self.addButton(key)
+        self.addButton(button_key)
 
     def run(self):
         global current_state
