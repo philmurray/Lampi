@@ -323,6 +323,11 @@ void startup() {
 	blink(TOP_3_PIN);
 
 	starting_up = false;
+
+	selectThing('1');
+	selectMode('b');
+	selectThing('s');
+	selectMode('n');
 }
 
 void blink(byte pin)
