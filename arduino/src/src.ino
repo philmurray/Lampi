@@ -85,8 +85,8 @@ SineEase NegSmallSineWave = SineEase(0, -255, 250, true);
 SineEase QuarterSmallSineWave = SineEase(0, 40, 250, true);
 SineEase OnSmallSineWave = SineEase(0, 255, 250, true);
 SineEase HalfMediumSineWave = SineEase(20,120, 500, true);
-SineEase OnMediumSineWave = SineEase(0, 255, 1000, true);
-SineEase OnLongSineWave = SineEase(0, 255, 2000, true);
+LinearEase OnMediumSineWave = LinearEase(0, 255, 1000, true);
+LinearEase OnLongSineWave = LinearEase(0, 255, 2000, true);
 
 
 const PROGMEM StripStateStep On[] = {
@@ -171,23 +171,14 @@ const PROGMEM StripStateStep State_7_steps[] = {
 	{ 2000, -1, &s7s4, 0, 0, &OnMediumEase, 0 }
 };
 
-RowWipeSelector s8s1 = RowWipeSelector(0, 2, 4, 4, 1000, true);
-BlockSelector s8s2 = BlockSelector(2, 2, 4, 4);
-RowWipeSelector s8s3 = RowWipeSelector(0, 3, 6, 6, 1000, true);
-BlockSelector s8s4 = BlockSelector(3, 3, 6, 6);
-RowWipeSelector s8s5 = RowWipeSelector(0, 2, 8, 8, 1000, true);
-BlockSelector s8s6 = BlockSelector(2, 2, 8, 8);
-RowWipeSelector s8s7 = RowWipeSelector(0, 4, 2, 2, 1000, true);
-BlockSelector s8s8 = BlockSelector(4, 4, 2, 2);
+RowRunnerSelector s8s1 = RowRunnerSelector(0, 5, 2, 3, 100, 6, 13, false);
+RowRunnerSelector s8s2 = RowRunnerSelector(0, 5, 4, 5, 100, 6, 13, false);
+RowRunnerSelector s8s3 = RowRunnerSelector(0, 5, 6, 7, 100, 6, 13, false);
 const PROGMEM StripStateStep State_8_steps[] = {
-	{ 0, -1, &s8s1, &HalfMediumSineEase,0,0, 0 },
-	{ 1500, -1, &s8s2, 0,0,&OnMediumEase, 0 },
-	{ 2250, -1, &s8s3, &HalfMediumSineEase,0,0, 0 },
-	{ 3750, -1, &s8s4, 0,0,&OnMediumEase, 0 },
-	{ 2750, -1, &s8s5, &HalfMediumSineEase,0,0, 0 },
-	{ 4250, -1, &s8s6, 0,0,&OnMediumEase, 0 },
-	{ 3000, -1, &s8s7, &HalfMediumSineEase,0,0, 0 },
-	{ 4500, -1, &s8s8, 0,0,&OnMediumEase, 0 },
+	{ 0, -1, &AllSelector, &HalfNow, 0, &OnNow, 0 },
+	{ 0, -1, &s8s1, &OnMediumSineEase, 0, &NegMediumSineEase, 0 },
+	{ 400, -1, &s8s2, &OnMediumSineEase, 0, &NegMediumSineEase, 0 },
+	{ 800, -1, &s8s3, &OnMediumSineEase, 0,&NegMediumSineEase, 0 },
 };
 
 BlockSelector s9s1 = BlockSelector(2, 2, 4, 4);
@@ -201,7 +192,7 @@ BlockSelector s9s8 = BlockSelector(3, 3, 3, 3);
 const PROGMEM StripStateStep State_9_steps[] = {
 	{ 0, 250, &AllSelector, &HalfNow, 0, &OnNow, 0},
 	{ 250, -1, &AllSelector, 0, &OnNow, 0, 0 },
-	{ 250, -1, &s2s2, &OnMediumSineEase, &NegMediumSineEase, &OnMediumSineEase, 0 },
+	{ 250, -1, &s2s2, &HalfMediumSineEase, &NegMediumSineEase, &OnMediumSineEase, 0 },
 	{ 2750, -1, &s9s1, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
 	{ 2900, -1, &s9s2, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
 	{ 3050, -1, &s9s3, &HalfMediumSineEase, &NegNow, &OnMediumSineEase, &QuarterSmallSineWave },
