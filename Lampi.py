@@ -120,7 +120,7 @@ def main():
     pressed = ""
     pressed_start = 0
     press_handled = False
-    long_press_time = int(lampiConfig['long_press_time'])
+    long_press_time = float(lampiConfig['long_press_time'])
 
     current_state = Idle()
 
@@ -281,6 +281,8 @@ class Off(State):
         global current_state
         if key == "b4":
             current_state = Idle()
+        if key == "b1":
+            current_state = ChangeIdle()
 
 
 class BuildMessage(State):
@@ -399,5 +401,28 @@ class HandleMessage(State):
         global current_state
         if self.start_time + HandleMessage.timeout < time.time():
             current_state = Idle()
+
+
+class ChangeIdle(State):
+    timeout = int(lampiConfig['change_idle_timeout'])
+
+    def __init__(self):
+        logging.debug("Entering ChangeIdle state")
+        self.start_time = time.time()
+
+        utilities.lights_message(ser, '1f2b3c4f')
+
+    def run(self):
+        global current_state
+        if self.start_time + BuildMessage.timeout < time.time():
+            current_state = Idle()
+
+    def handleSymbolButton(self, key):
+        if key == "b2":
+            self.start_time = time.time()
+            utilities.lights_message(ser, 's-')
+        elif key == "b3":
+            self.start_time = time.time()
+            utilities.lights_message(ser, 's+')
 
 main()

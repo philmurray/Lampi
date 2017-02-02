@@ -16,6 +16,7 @@
 #include "RowRunnerSelector.h"
 #include "ColRunnerSelector.h"
 
+#include <EEPROM.h>
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
 #include <avr/power.h>
@@ -35,6 +36,7 @@
 
 #define NUM_PINS 7
 #define STRIP_STATE 7
+#define STRIP_IDLE_STATE 8
 #define NO_SELECTION 254
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(STRIP_PINS, NEOPIXEL_PIN, NEO_RGBW + NEO_KHZ800);
@@ -47,8 +49,16 @@ PinState* pinStates[7];
 
 OnOffPinState OnPin = OnOffPinState(true);
 OnOffPinState OffPin = OnOffPinState(false);
-BlinkPinState SlowBlink = BlinkPinState(500, 250);
-BlinkPinState FastBlink = BlinkPinState(200, 100);
+BlinkPinState SlowBlink = BlinkPinState(500, 250, 0);
+BlinkPinState AltSlowBlink = BlinkPinState(500, 250, 250);
+BlinkPinState FastBlink = BlinkPinState(200, 100, 0);
+
+
+const int stripIdleAddr = 0;
+char stripIdle = '0';
+#define NUM_IDLE_STATES 10
+char idleStates[] = { '0', '9', '3', '4', '5', '6', '7', '8', '1', '2' };
+
 
 StripState stripState = StripState(&strip);
 
@@ -84,9 +94,10 @@ LinearEase OnVLongEase = LinearEase(0, 200, 4000, false);
 SineEase NegSmallSineWave = SineEase(0, -255, 250, true);
 SineEase QuarterSmallSineWave = SineEase(0, 40, 250, true);
 SineEase OnSmallSineWave = SineEase(0, 255, 250, true);
-SineEase HalfMediumSineWave = SineEase(20,120, 500, true);
+SineEase HalfMediumSineWave = SineEase(20, 120, 500, true);
 LinearEase OnMediumSineWave = LinearEase(0, 255, 1000, true);
 LinearEase OnLongSineWave = LinearEase(0, 255, 2000, true);
+LinearEase OnSuperLongSineWave = LinearEase(0, 255, 8000, true);
 
 
 const PROGMEM StripStateStep On[] = {
@@ -160,7 +171,7 @@ const PROGMEM StripStateStep State_6_steps[] = {
 	{ 4000, 1000, &s6s4, &NegSmallSineWave, 0, &OnSmallSineWave, 0 }
 };
 
-RowWipeSelector s7s1 = RowWipeSelector(0,5,0,2,2500,true);
+RowWipeSelector s7s1 = RowWipeSelector(0, 5, 0, 2, 2500, true);
 RowWipeSelector s7s2 = RowWipeSelector(0, 5, 7, 9, 2500, false);
 ColWipeSelector s7s3 = ColWipeSelector(0, 5, 2, 9, 5000, true);
 ColWipeSelector s7s4 = ColWipeSelector(0, 5, 0, 7, 5000, false);
@@ -267,12 +278,57 @@ const PROGMEM StripStateStep State_e_steps[] = {
 	{ 1333, -1, &ses1, 0, 0, &OnMediumSineWave, 0 }
 };
 
+const PROGMEM StripStateStep Idle_0[] = {
+	{ 0, -1, &AllSelector, 0, 0, 0, &MinNow }
+};
+
+const PROGMEM StripStateStep Idle_1[] = {
+	{ 0, -1, &AllSelector, 0, 0, 0, &MinNow },
+	{ 0, -1, &AllSelector, &OnSuperLongSineWave, 0, 0, 0 },
+	{ 5333, -1, &AllSelector, 0, &OnSuperLongSineWave, 0, 0 },
+	{ 10666, -1, &AllSelector, 0, 0, &OnSuperLongSineWave, 0 }
+};
+
+
+ColRunnerSelector i2s1 = ColRunnerSelector(0, 5, 0, 9, 1000, 3, 6, false);
+RowRunnerSelector i2s2 = RowRunnerSelector(0, 5, 0, 9, 1000, 3, 6, false);
+const PROGMEM StripStateStep Idle_2[] = {
+	{ 0, -1, &AllSelector, 0, 0, 0, &MinNow },
+	{ 0, -1, &i2s1, &OnMediumSineEase, 0, 0, 0 },
+	{ 750, -1, &i2s2, 0, &OnMediumSineEase, 0, 0 },
+	{ 0, -1, &AllSelector, 0, 0, &OnSuperLongSineWave, 0 }
+};
+
+const PROGMEM StripStateStep Idle_3[] = {
+	{ 0, -1, &AllSelector, &HalfNow, 0, 0, &MinNow }
+};
+const PROGMEM StripStateStep Idle_4[] = {
+	{ 0, -1, &AllSelector, 0, &HalfNow, 0, &MinNow }
+};
+const PROGMEM StripStateStep Idle_5[] = {
+	{ 0, -1, &AllSelector, 0, 0, &HalfNow, &MinNow }
+};
+const PROGMEM StripStateStep Idle_6[] = {
+	{ 0, -1, &AllSelector, &HalfNow, 0, &HalfNow, &MinNow }
+};
+const PROGMEM StripStateStep Idle_7[] = {
+	{ 0, -1, &AllSelector, &HalfNow, &HalfNow, 0, &MinNow }
+};
+const PROGMEM StripStateStep Idle_8[] = {
+	{ 0, -1, &AllSelector, 0, &HalfNow, &HalfNow, &MinNow }
+};
+
 void setup() {
 	Serial.begin(9600);
 	for (byte i = 0; i < NUM_PINS; i++)
 	{
 		pinMode(pins[i], OUTPUT);
 	}
+
+	EEPROM.get(stripIdleAddr, stripIdle);
+	Serial.print(F("Got idle val from eeprom "));
+	Serial.println(stripIdle);
+
 	strip.begin();
 }
 
@@ -317,8 +373,7 @@ void startup() {
 
 	selectThing('1');
 	selectMode('b');
-	selectThing('s');
-	selectMode('n');
+	showStripIdle(1200);
 }
 
 void blink(byte pin)
@@ -334,6 +389,9 @@ void selectMode(char mode) {
 	}
 	else if (selectedPin == STRIP_STATE) {
 		selectStripMode(mode);
+	}
+	else if (selectedPin == STRIP_IDLE_STATE) {
+		selectStripIdleMode(mode);
 	}
 
 	selectedPin = NO_SELECTION;
@@ -365,6 +423,83 @@ void selectThing(char thing) {
 	case 's':
 		selectedPin = STRIP_STATE;
 		break;
+	case 'z':
+		selectedPin = STRIP_IDLE_STATE;
+		break;
+	}
+}
+void selectStripIdleMode(char mode) {
+
+
+	if (mode == '-' || mode == '+')
+	{
+		int index = 0;
+		for (int i = 0; i < NUM_IDLE_STATES; i++)
+		{
+			if (idleStates[i] == stripIdle)
+			{
+				index = i;
+				break;
+			}
+		}
+		if (mode == '-')
+		{
+			stripIdle = idleStates[(index + NUM_IDLE_STATES - 1) % NUM_IDLE_STATES];
+		}
+		else
+		{
+			stripIdle = idleStates[(index + NUM_IDLE_STATES + 1) % NUM_IDLE_STATES];
+		}
+	}
+	else
+	{
+		stripIdle = mode;
+	}
+
+
+	EEPROM.put(stripIdleAddr, stripIdle);
+
+	Serial.print(F("Setting Idle to "));
+	Serial.println(mode);
+
+	showStripIdle(250);
+}
+
+void showStripIdle(int fade) {
+	switch (stripIdle)
+	{
+		case '0':
+			stripState.reset(On, sizeof(On) / sizeof(On[0]), fade);
+			break;
+		case '1':
+			stripState.reset(Idle_1, sizeof(Idle_1) / sizeof(On[0]), fade);
+			break;
+		case '2':
+			stripState.reset(Idle_2, sizeof(Idle_2) / sizeof(On[0]), fade);
+			break;
+		case '3':
+			stripState.reset(Idle_3, sizeof(Idle_3) / sizeof(On[0]), fade);
+			break;
+		case '4':
+			stripState.reset(Idle_4, sizeof(Idle_4) / sizeof(On[0]), fade);
+			break;
+		case '5':
+			stripState.reset(Idle_5, sizeof(Idle_5) / sizeof(On[0]), fade);
+			break;
+		case '6':
+			stripState.reset(Idle_6, sizeof(Idle_6) / sizeof(On[0]), fade);
+			break;
+		case '7':
+			stripState.reset(Idle_7, sizeof(Idle_7) / sizeof(On[0]), fade);
+			break;
+		case '8':
+			stripState.reset(Idle_8, sizeof(Idle_8) / sizeof(On[0]), fade);
+			break;
+		case '9':
+			stripState.reset(Idle_0, sizeof(Idle_0) / sizeof(On[0]), fade);
+			break;
+		default:
+			stripState.reset(On, sizeof(On) / sizeof(On[0]), fade);
 	}
 }
 
@@ -375,8 +510,7 @@ void selectStripMode(char mode) {
 		stripState.reset(Off, sizeof(Off) / sizeof(On[0]), 1200);
 		break;
 	case 'n':
-		Serial.println(F("Entering On State"));
-		stripState.reset(On, sizeof(On) / sizeof(On[0]), 1200);
+		showStripIdle(1200);
 		break;
 	case 'u':
 		Serial.println(F("Entering Up State"));
@@ -470,6 +604,9 @@ void selectButtonMode(char mode) {
 		break;
 	case 'b':
 		pinStates[selectedPin] = &SlowBlink;
+		break;
+	case 'c':
+		pinStates[selectedPin] = &AltSlowBlink;
 		break;
 	case 's':
 		pinStates[selectedPin] = &FastBlink;
