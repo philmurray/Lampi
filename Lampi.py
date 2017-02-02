@@ -421,9 +421,9 @@ class ChangeIdle(State):
     def handleSymbolButton(self, key):
         if key == "b2":
             self.start_time = time.time()
-            utilities.lights_message(ser, 's-')
+            utilities.lights_message(ser, 'z-')
         elif key == "b3":
             self.start_time = time.time()
-            utilities.lights_message(ser, 's+')
+            utilities.lights_message(ser, 'z+')
 
 main()
