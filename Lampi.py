@@ -256,6 +256,9 @@ class Idle(State):
         if key == "b4":
             current_state = Off()
             return True
+        if key == "b1":
+            current_state = ChangeIdle()
+            return True
         else:
             return False
 
@@ -281,8 +284,6 @@ class Off(State):
         global current_state
         if key == "b4":
             current_state = Idle()
-        if key == "b1":
-            current_state = ChangeIdle()
 
 
 class BuildMessage(State):
