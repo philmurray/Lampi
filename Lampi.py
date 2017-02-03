@@ -22,6 +22,7 @@ lampiConfig = config['Lampi']
 
 ser = serial.Serial(lampiConfig['Serial'], int(lampiConfig['BaudRate']), timeout=1)
 time.sleep(2)
+serialUtil = SerialUtil(ser)
 
 pins = {
     "b1": {
@@ -111,7 +112,7 @@ def main():
     for key,val in lamps.items():
         if not val["is_me"]:
             GPIO.setup(val["button_pin"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
-            utilities.lights_message(ser, val["light_pin"] + 'f')
+            serialUtil.lights_message( val["light_pin"] + 'f')
         else:
             my_lamp = key
 
@@ -194,15 +195,15 @@ class Idle(State):
     def __init__(self, skipStrip = False):
         logging.debug("Entering Idle state")
 
-        utilities.lights_message(ser, '1n2n3n4n')
+        serialUtil.lights_message( '1n2n3n4n')
         if skipStrip == False:
-            utilities.lights_message(ser, 'sn')
+            serialUtil.lights_message( 'sn')
 
         for key,val in lamps.items():
             if val["online"]:
-                utilities.lights_message(ser, val['light_pin'] + 'n')
+                serialUtil.lights_message( val['light_pin'] + 'n')
             else:
-                utilities.lights_message(ser, val['light_pin'] + 'f')
+                serialUtil.lights_message( val['light_pin'] + 'f')
 
         self.last_status_check = 0
         self.last_message_check = 0
@@ -217,11 +218,11 @@ class Idle(State):
                     doc = statusCollection.find_one({"lampId": key, "time":{"$gt": time.time() - Idle.status_interval * 2}})
                     if doc is None and val['online']:
                         val['online'] = False
-                        utilities.lights_message(ser, val['light_pin'] + 'f')
+                        serialUtil.lights_message( val['light_pin'] + 'f')
                         logging.debug(key + ' is not online.')
                     elif doc is not None and not val['online']:
                         val['online'] = True
-                        utilities.lights_message(ser, val['light_pin'] + 'n')
+                        serialUtil.lights_message( val['light_pin'] + 'n')
                         logging.debug(key + ' is online.')
 
                 statusCollection.update({"lampId": my_lamp}, {"$set": {"time": time.time()}}, True)
@@ -270,14 +271,14 @@ class Off(State):
         logging.debug("Entering Off state")
         for key,val in pins.items():
             if key == "b4":
-                utilities.lights_message(ser, val['light_pin'] + 'n')
+                serialUtil.lights_message( val['light_pin'] + 'n')
             else:
-                utilities.lights_message(ser, val['light_pin'] + 'f')
+                serialUtil.lights_message( val['light_pin'] + 'f')
 
         for key,val in lamps.items():
-            utilities.lights_message(ser, val['light_pin'] + 'f')
+            serialUtil.lights_message( val['light_pin'] + 'f')
 
-        utilities.lights_message(ser, 'sf')
+        serialUtil.lights_message( 'sf')
 
     def run(self):
         pass
@@ -298,12 +299,12 @@ class BuildMessage(State):
 
         for key,val in lamps.items():
             if val["online"]:
-                utilities.lights_message(ser, val['light_pin'] + 'b')
+                serialUtil.lights_message( val['light_pin'] + 'b')
             else:
-                utilities.lights_message(ser, val['light_pin'] + 'f')
+                serialUtil.lights_message( val['light_pin'] + 'f')
 
         for key,val in pins.items():
-            utilities.lights_message(ser, val['light_pin'] + 'f')
+            serialUtil.lights_message( val['light_pin'] + 'f')
 
         self.addButton(button_key)
 
@@ -314,7 +315,7 @@ class BuildMessage(State):
 
     def addButton(self, key):
         logging.debug("BuildMessage: Adding " + key)
-        utilities.lights_message(ser, pins[key]['light_pin'] + 'n')
+        serialUtil.lights_message( pins[key]['light_pin'] + 'n')
         self.buttons += pins[key]['strip_code']
 
     def handleSymbolButton(self, key):
@@ -341,20 +342,20 @@ class SendMessage(State):
 
         for key,val in lamps.items():
             if lamp_key == key:
-                utilities.lights_message(ser, val['light_pin'] + 's')
+                serialUtil.lights_message( val['light_pin'] + 's')
             else:
-                utilities.lights_message(ser, val['light_pin'] + 'f')
+                serialUtil.lights_message( val['light_pin'] + 'f')
 
         button_key = ""
         for key,val in pins.items():
             if buttons & val['strip_code']:
-                utilities.lights_message(ser, val['light_pin'] + 's')
+                serialUtil.lights_message( val['light_pin'] + 's')
                 if (button_key == ""):
                     button_key = key
             else:
-                utilities.lights_message(ser, val['light_pin'] + 'f')
+                serialUtil.lights_message( val['light_pin'] + 'f')
 
-        utilities.lights_message(ser, 'su')
+        serialUtil.lights_message( 'su')
 
         try:
             logging.debug("SendMessage: button_key: {}\nbuttons: {}\nto: {}".format(button_key, buttons, lamp_key))
@@ -381,15 +382,15 @@ class HandleMessage(State):
 
         for key,val in lamps.items():
             if lamp_key == key:
-                utilities.lights_message(ser, val['light_pin'] + 's')
+                serialUtil.lights_message( val['light_pin'] + 's')
             else:
-                utilities.lights_message(ser, val['light_pin'] + 'f')
+                serialUtil.lights_message( val['light_pin'] + 'f')
 
         for key,val in pins.items():
             if button_key == key or ( buttons is not None and val['strip_code'] & buttons ):
-                utilities.lights_message(ser, val['light_pin'] + 's')
+                serialUtil.lights_message( val['light_pin'] + 's')
             else:
-                utilities.lights_message(ser, val['light_pin'] + 'f')
+                serialUtil.lights_message( val['light_pin'] + 'f')
 
         key = 's'
         if (buttons is None):
@@ -398,7 +399,7 @@ class HandleMessage(State):
             key += strip_codes[buttons]
 
         logging.debug("HandleMessage: showing: {}".format(key))
-        utilities.lights_message(ser, key)
+        serialUtil.lights_message( key)
 
     def run(self):
         global current_state
@@ -413,7 +414,7 @@ class ChangeIdle(State):
         logging.debug("Entering ChangeIdle state")
         self.start_time = time.time()
 
-        utilities.lights_message(ser, '1f2b3c4f')
+        serialUtil.lights_message( '1f2b3c4f')
 
     def run(self):
         global current_state
@@ -423,9 +424,9 @@ class ChangeIdle(State):
     def handleSymbolButton(self, key):
         if key == "b2":
             self.start_time = time.time()
-            utilities.lights_message(ser, 'z-')
+            serialUtil.lights_message( 'z-')
         elif key == "b3":
             self.start_time = time.time()
-            utilities.lights_message(ser, 'z+')
+            serialUtil.lights_message( 'z+')
 
 main()

@@ -9,12 +9,19 @@ def check_internet(host="8.8.8.8", port=53, timeout=3):
 	except Exception as ex:
 		return False
 
-def lights_message(serial, message, wait=True):
-	m = ''
-	for c in message:
-		m += c
-		if len(m) == 2:
-			serial.write(bytes(m, 'UTF-8'))
-			if wait:
-				time.sleep(0.005)
-			m = ''
+class SerialUtil:
+	states = {}
+	def __init__(self, serial):
+		self.serial = serial
+
+	def lights_message(self, message, wait=True):
+		m = ''
+		for c in message:
+			m += c
+			if len(m) == 2:
+				if Util.states.get(m[0]) != m[1]:
+					Util.states[m[0]] = m[1]
+					serial.write(bytes(m, 'UTF-8'))
+					if wait:
+						time.sleep(0.005)
+				m = ''

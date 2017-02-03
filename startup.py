@@ -20,11 +20,12 @@ lampiConfig = config['Lampi']
 
 ser = serial.Serial(lampiConfig['Serial'], int(lampiConfig['BaudRate']), timeout=1)
 time.sleep(2)
-utilities.lights_message(ser, '1n2b')
+serialUtil = SerialUtil(ser)
+serialUtil.lights_message( '1n2b')
 
 def callStartup():
 	if (utilities.check_internet()):
-		utilities.lights_message(ser, '2n3b')
+		serialUtil.lights_message( '2n3b')
 		logging.info("Running startup.sh")
 		p = subprocess.Popen(os.path.join(cmddir, 'startup.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdout, stderr = p.communicate()
@@ -33,7 +34,7 @@ def callStartup():
 		if stderr:
 		    logging.error(stderr)
 
-		utilities.lights_message(ser, '3n4b')
+		serialUtil.lights_message( '3n4b')
 		logging.info("Running arduino install")
 		p = subprocess.Popen(os.path.join(cmddir, 'arduino/install.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdout, stderr = p.communicate()
@@ -54,7 +55,7 @@ while (not utilities.check_internet() and time.time() < internetTimeout):
 
 if (not utilities.check_internet()):
 	logging.info("internet timeout.  starting wps")
-	utilities.lights_message(ser, '2s', False)
+	serialUtil.lights_message( '2s', False)
 	subprocess.call(['/sbin/wpa_cli', 'wps_pbc'])
 	wpsTimeout = time.time() + int(startupConfig['WPSWaitTimeout'])
 	while (not utilities.check_internet() and time.time() < wpsTimeout):
