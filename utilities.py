@@ -19,8 +19,8 @@ class SerialUtil:
 		for c in message:
 			m += c
 			if len(m) == 2:
-				if Util.states.get(m[0]) != m[1]:
-					Util.states[m[0]] = m[1]
+				if SerialUtil.states.get(m[0]) != m[1]:
+					SerialUtil.states[m[0]] = m[1]
 					serial.write(bytes(m, 'UTF-8'))
 					if wait:
 						time.sleep(0.005)

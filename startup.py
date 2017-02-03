@@ -20,7 +20,7 @@ lampiConfig = config['Lampi']
 
 ser = serial.Serial(lampiConfig['Serial'], int(lampiConfig['BaudRate']), timeout=1)
 time.sleep(2)
-serialUtil = SerialUtil(ser)
+serialUtil = utilities.SerialUtil(ser)
 serialUtil.lights_message( '1n2b')
 
 def callStartup():
