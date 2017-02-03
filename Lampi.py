@@ -192,12 +192,10 @@ class Idle(State):
     status_interval = int(lampiConfig['status_check_timeout'])
     message_interval = int(lampiConfig['message_check_timeout'])
 
-    def __init__(self, skipStrip = False):
+    def __init__(self):
         logging.debug("Entering Idle state")
 
-        serialUtil.lights_message( '1n2n3n4n')
-        if skipStrip == False:
-            serialUtil.lights_message( 'sn')
+        serialUtil.lights_message( '1n2n3n4nsn')
 
         for key,val in lamps.items():
             if val["online"]:
@@ -419,7 +417,7 @@ class ChangeIdle(State):
     def run(self):
         global current_state
         if self.start_time + BuildMessage.timeout < time.time():
-            current_state = Idle(True)
+            current_state = Idle()
 
     def handleSymbolButton(self, key):
         if key == "b2":

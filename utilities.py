@@ -20,7 +20,11 @@ class SerialUtil:
 			m += c
 			if len(m) == 2:
 				if SerialUtil.states.get(m[0]) != m[1]:
-					SerialUtil.states[m[0]] = m[1]
+					if m[1] == '-' or m[1] == '+':
+						SerialUtil.states[m[0]] = 'n'
+					else:
+						SerialUtil.states[m[0]] = m[1]
+
 					self.serial.write(bytes(m, 'UTF-8'))
 					if wait:
 						time.sleep(0.005)

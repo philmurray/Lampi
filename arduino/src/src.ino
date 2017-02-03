@@ -56,8 +56,8 @@ BlinkPinState FastBlink = BlinkPinState(200, 100, 0);
 
 const int stripIdleAddr = 0;
 char stripIdle = '0';
-#define NUM_IDLE_STATES 10
-char idleStates[] = { '0', '9', '3', '4', '5', '6', '7', '8', '1', '2' };
+#define NUM_IDLE_STATES 11
+char idleStates[] = { '0', '9', '3', '4', '5', '6', '7', '8', '1', '2', 'a' };
 
 
 StripState stripState = StripState(&strip);
@@ -318,6 +318,22 @@ const PROGMEM StripStateStep Idle_8[] = {
 	{ 0, -1, &AllSelector, 0, &HalfNow, &HalfNow, &MinNow }
 };
 
+ColRunnerSelector ias1 = ColRunnerSelector(2, 2, 0, 9, 100, 4, 30, false);
+ColRunnerSelector ias2 = ColRunnerSelector(3, 3, 0, 9, 100, 4, 31, false);
+ColRunnerSelector ias3 = ColRunnerSelector(4, 4, 0, 9, 100, 4, 32, false);
+ColRunnerSelector ias4 = ColRunnerSelector(1, 1, 0, 9, 100, 4, 33, false);
+ColRunnerSelector ias5 = ColRunnerSelector(0, 0, 0, 9, 100, 4, 34, false);
+ColRunnerSelector ias6 = ColRunnerSelector(5, 5, 0, 9, 100, 4, 35, false);
+const PROGMEM StripStateStep Idle_9[] = {
+	{ 0, -1, &AllSelector, 0, 0, 0, &MinNow },
+	{ 750, -1, &ias1, &HalfSmallEase, &HalfSmallEase, 0, 0 },
+	{ 1500, -1, &ias2, &OnSmallEase, 0, 0, 0 },
+	{ 2000, -1, &ias3, 0, &OnSmallEase, 0, 0 },
+	{ 2250, -1, &ias4, 0, 0, &OnSmallEase, 0 },
+	{ 250, -1, &ias5, &HalfSmallEase, 0, &HalfSmallEase, 0 },
+	{ 1000, -1, &ias6, 0, &HalfSmallEase, &HalfSmallEase, 0 }
+};
+
 void setup() {
 	Serial.begin(9600);
 	for (byte i = 0; i < NUM_PINS; i++)
@@ -497,6 +513,9 @@ void showStripIdle(int fade) {
 			break;
 		case '9':
 			stripState.reset(Idle_0, sizeof(Idle_0) / sizeof(On[0]), fade);
+			break;
+		case 'a':
+			stripState.reset(Idle_9, sizeof(Idle_9) / sizeof(On[0]), fade);
 			break;
 		default:
 			stripState.reset(On, sizeof(On) / sizeof(On[0]), fade);
