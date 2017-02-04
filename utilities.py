@@ -14,6 +14,9 @@ class SerialUtil:
 	def __init__(self, serial):
 		self.serial = serial
 
+	def clear_lights_cache(self):
+		SerialUtil.states = {}
+
 	def lights_message(self, message, wait=True):
 		m = ''
 		for c in message:

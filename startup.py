@@ -35,6 +35,7 @@ def callStartup():
 		    logging.error(stderr)
 
 		serialUtil.lights_message( '3n4b')
+		serialUtil.clear_lights_cache()
 		logging.info("Running arduino install")
 		p = subprocess.Popen(os.path.join(cmddir, 'arduino/install.sh'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		stdout, stderr = p.communicate()
