@@ -318,12 +318,12 @@ const PROGMEM StripStateStep Idle_8[] = {
 	{ 0, -1, &AllSelector, 0, &HalfNow, &HalfNow, &MinNow }
 };
 
-ColRunnerSelector ias1 = ColRunnerSelector(2, 2, 0, 9, 100, 4, 30, false);
-ColRunnerSelector ias2 = ColRunnerSelector(3, 3, 0, 9, 100, 4, 31, false);
-ColRunnerSelector ias3 = ColRunnerSelector(4, 4, 0, 9, 100, 4, 32, false);
-ColRunnerSelector ias4 = ColRunnerSelector(1, 1, 0, 9, 100, 4, 33, false);
-ColRunnerSelector ias5 = ColRunnerSelector(0, 0, 0, 9, 100, 4, 34, false);
-ColRunnerSelector ias6 = ColRunnerSelector(5, 5, 0, 9, 100, 4, 35, false);
+ColRunnerSelector ias1 = ColRunnerSelector(2, 2, 0, 9, 100, 5, 30, false);
+ColRunnerSelector ias2 = ColRunnerSelector(3, 3, 0, 9, 100, 5, 31, false);
+ColRunnerSelector ias3 = ColRunnerSelector(4, 4, 0, 9, 100, 5, 32, false);
+ColRunnerSelector ias4 = ColRunnerSelector(1, 1, 0, 9, 100, 5, 33, false);
+ColRunnerSelector ias5 = ColRunnerSelector(0, 0, 0, 9, 100, 5, 34, false);
+ColRunnerSelector ias6 = ColRunnerSelector(5, 5, 0, 9, 100, 5, 35, false);
 const PROGMEM StripStateStep Idle_9[] = {
 	{ 0, -1, &AllSelector, 0, 0, 0, &MinNow },
 	{ 750, -1, &ias1, &HalfSmallEase, &HalfSmallEase, 0, 0 },
