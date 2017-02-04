@@ -295,7 +295,7 @@ RowRunnerSelector i2s2 = RowRunnerSelector(0, 5, 0, 9, 1000, 3, 6, false);
 const PROGMEM StripStateStep Idle_2[] = {
 	{ 0, -1, &AllSelector, 0, 0, 0, &MinNow },
 	{ 0, -1, &i2s1, &OnMediumSineEase, 0, 0, 0 },
-	{ 750, -1, &i2s2, 0, &OnMediumSineEase, 0, 0 },
+	{ 250, -1, &i2s2, 0, &OnMediumSineEase, 0, 0 },
 	{ 0, -1, &AllSelector, 0, 0, &OnSuperLongSineWave, 0 }
 };
 
